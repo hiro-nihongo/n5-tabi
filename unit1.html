@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A6E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Unit 1 すうじとじかん | にほんへの旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E3A6E;      /* 駅名標ネイビー */
+    --green:#00A063;     /* 路線グリーン */
+    --red:#E7222E;       /* 現在地レッド */
+    --yellow:#FFC81E;    /* ホーム黄色線 */
+    --bg:#EEF3F8;
+    --ink:#1B2430;
+    --sub:#5B6B80;
+    --white:#FFFFFF;
+    --radius:16px;
+    --jp:'M PLUS Rounded 1c','Noto Sans JP',sans-serif;
+    --th:'Noto Sans Thai','M PLUS Rounded 1c',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);background:var(--bg);color:var(--ink);
+    min-height:100vh;padding:16px 12px 48px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  button{font-family:inherit;cursor:pointer;border:none}
+  button:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+
+  /* ===== 駅名標ヘッダー ===== */
+  .station-sign{
+    width:100%;max-width:640px;background:var(--white);
+    border-radius:var(--radius);box-shadow:0 4px 0 rgba(30,58,110,.15);
+    overflow:hidden;border:3px solid var(--navy);
+  }
+  .sign-main{text-align:center;padding:18px 16px 10px}
+  .sign-main .kana{
+    font-family:var(--jp);font-weight:800;
+    font-size:clamp(26px,7vw,40px);color:var(--navy);letter-spacing:.04em;
+  }
+  .sign-main .romaji{
+    font-family:var(--jp);font-weight:700;text-transform:uppercase;
+    letter-spacing:.25em;font-size:12px;color:var(--sub);margin-top:2px;
+  }
+  .sign-line{display:flex;align-items:center;gap:8px;padding:8px 14px 14px}
+  .sign-line .prev,.sign-line .next{font-size:12px;color:var(--sub);white-space:nowrap;font-weight:600}
+  .sign-line .track{flex:1;height:14px;border-radius:7px;background:var(--green);position:relative}
+  .sign-line .track::before,.sign-line .track::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:10px;height:10px;border-radius:50%;background:var(--white);
+  }
+  .sign-line .track::before{left:6px}
+  .sign-line .track::after{right:6px}
+  #trainMarker{position:absolute;top:50%;left:6px;transform:translate(-50%,-58%);font-size:22px;transition:left .6s ease}
+
+  .platform{
+    width:100%;max-width:640px;margin-top:12px;background:var(--white);
+    border-radius:var(--radius);padding:12px 16px;box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .platform .label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
+  .platform .bar{height:12px;background:#E3E9F1;border-radius:6px;overflow:hidden}
+  .platform .fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,var(--yellow),var(--yellow) 10px,#E8AE00 10px,#E8AE00 20px);transition:width .5s ease}
+
+  .tabs{width:100%;max-width:640px;display:flex;gap:6px;margin-top:14px}
+  .tab{
+    flex:1;padding:11px 2px;border-radius:12px;font-weight:700;font-size:13px;
+    background:var(--white);color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);transition:transform .1s;
+  }
+  .tab:active{transform:translateY(2px)}
+  .tab.active{background:var(--navy);color:var(--white)}
+
+  main{width:100%;max-width:640px;margin-top:14px}
+  section{display:none}
+  section.show{display:block;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* ===== カテゴリーチップ & チャンツ ===== */
+  .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+  .chip{
+    padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;
+    background:var(--white);color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .chip.active{background:var(--green);color:var(--white)}
+  .chant-bar{text-align:center;margin-bottom:12px}
+  .chant-btn{
+    background:var(--yellow);color:#5C4300;font-weight:800;font-size:14px;
+    padding:9px 18px;border-radius:999px;box-shadow:0 3px 0 #C99A00;
+  }
+
+  /* ===== フラッシュカード ===== */
+  .card-stage{perspective:1200px;display:flex;justify-content:center}
+  .flashcard{
+    width:100%;max-width:420px;height:300px;position:relative;
+    transform-style:preserve-3d;transition:transform .45s;cursor:pointer;background:none;
+  }
+  .flashcard.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    background:var(--white);border-radius:20px;box-shadow:0 6px 0 rgba(30,58,110,.15);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;border:3px solid var(--navy);
+  }
+  .face.back{transform:rotateY(180deg);border-color:var(--green)}
+  .face .emoji{font-size:50px}
+  .face .word{font-family:var(--jp);font-weight:800;font-size:36px;color:var(--navy);margin-top:4px}
+  .face .kanji{font-family:var(--jp);font-size:17px;color:var(--sub);margin-top:2px}
+  .face .hint{font-size:13px;color:var(--sub);margin-top:10px}
+  .face .thai{font-size:28px;font-weight:700;color:var(--green);text-align:center}
+  .face .trap{
+    margin-top:12px;font-size:13px;background:#FFF6DC;border:2px dashed var(--yellow);
+    border-radius:10px;padding:8px 12px;color:#7A5A00;max-width:100%;
+  }
+  .speak-btn{
+    margin-top:12px;background:var(--navy);color:var(--white);
+    border-radius:999px;padding:8px 18px;font-size:14px;font-weight:700;display:inline-block;
+  }
+  .fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  .fc-btn{padding:12px 20px;border-radius:12px;font-weight:700;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+  .fc-btn.unknown{background:var(--white);color:var(--sub)}
+  .fc-btn.known{background:var(--green);color:var(--white)}
+  .fc-count{text-align:center;margin-top:10px;font-size:13px;color:var(--sub)}
+  .star{color:#E8AE00}
+
+  /* ===== クイズ / ゲーム共通 ===== */
+  .quiz-box{
+    background:var(--white);border-radius:20px;border:3px solid var(--navy);
+    box-shadow:0 6px 0 rgba(30,58,110,.15);padding:22px 18px;text-align:center;
+  }
+  .quiz-word{font-family:var(--jp);font-weight:800;font-size:34px;color:var(--navy)}
+  .quiz-emoji{font-size:44px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .choice{
+    padding:14px 8px;border-radius:12px;background:#F0F4FA;font-size:16px;font-weight:600;
+    border:2px solid transparent;transition:transform .08s;
+  }
+  .choice.jpchoice{font-family:var(--jp);font-weight:700}
+  .choice:active{transform:scale(.97)}
+  .choice.correct{background:#DFF7EC;border-color:var(--green);color:#00693F}
+  .choice.wrong{background:#FDE3E5;border-color:var(--red);color:#9B1720}
+  .quiz-meta{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--sub);margin-bottom:12px}
+  .big-btn{
+    display:block;width:100%;margin-top:16px;padding:14px;border-radius:14px;
+    background:var(--red);color:var(--white);font-size:17px;font-weight:800;box-shadow:0 4px 0 #A5121C;
+  }
+  .big-btn.green{background:var(--green);box-shadow:0 4px 0 #006B42}
+  .big-btn.navy{background:var(--navy);box-shadow:0 4px 0 #12244A}
+  .result{font-size:17px;line-height:1.7;margin-top:10px}
+  .rank{font-family:var(--jp);font-size:24px;font-weight:800;color:var(--navy);margin-top:8px}
+  .timer{font-family:var(--jp);font-weight:800;font-size:22px;color:var(--red)}
+  .streak{color:#E8AE00;font-weight:800}
+  .note{font-size:12px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+  .voice-row{
+    width:100%;max-width:640px;margin-top:16px;background:var(--white);
+    border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;
+    font-size:13px;font-weight:600;color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .voice-row select{flex:1;font-family:inherit;font-size:13px;padding:6px;border-radius:8px;border:2px solid #DDE5EF;background:#F7FAFD}
+
+  /* ===== 時計 ===== */
+  .clock-wrap{display:flex;justify-content:center;margin-top:6px}
+  .price-item{font-size:52px;margin-top:4px}
+  .price-name{font-family:var(--jp);font-weight:700;color:var(--sub);font-size:15px;margin-top:2px}
+  .back-link{width:100%;max-width:640px;font-size:14px;font-weight:700;color:var(--navy);text-decoration:none;margin-bottom:8px;display:block}
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">◀ กลับไปที่แผนที่การเดินทาง</a>
+
+<!-- 駅名標 -->
+<header class="station-sign" role="banner">
+  <div class="sign-main">
+    <div class="kana">すうじとじかん</div>
+    <div class="romaji">Unit 1 · Sūji to Jikan</div>
+  </div>
+  <div class="sign-line" aria-hidden="true">
+    <span class="prev">◀ นาริตะ<br>Narita</span>
+    <span class="track"><span id="trainMarker">🚆</span></span>
+    <span class="next">โตเกียว ▶<br>Tokyo</span>
+  </div>
+</header>
+
+<div class="platform">
+  <div class="label">
+    <span>ความคืบหน้า (★★ ฟังเข้าใจแล้ว)</span>
+    <span id="progressText">0 / 70 คำ</span>
+  </div>
+  <div class="bar"><div class="fill" id="progressFill"></div></div>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" id="tabCards" role="tab" aria-selected="true">📇 การ์ด</button>
+  <button class="tab" id="tabQuiz" role="tab" aria-selected="false">🎧 ควิซ</button>
+  <button class="tab" id="tabClock" role="tab" aria-selected="false">⏰ นาฬิกา</button>
+  <button class="tab" id="tabBoss" role="tab" aria-selected="false">👑 ประมูล</button>
+</nav>
+
+<main>
+  <!-- ===== フラッシュカード ===== -->
+  <section id="secCards" class="show">
+    <div class="chips" id="chipBar"></div>
+    <div class="chant-bar"><button class="chant-btn" id="btnChant">🎵 เล่นชานท์หมวดนี้</button></div>
+    <div class="card-stage">
+      <button class="flashcard" id="flashcard" aria-label="พลิกการ์ด">
+        <div class="face front">
+          <div class="emoji" id="fcEmoji">1️⃣</div>
+          <div class="word" id="fcWord">いち</div>
+          <div class="kanji" id="fcKanji">一</div>
+          <span class="speak-btn" id="fcSpeak">🔊 ฟังเสียง</span>
+          <div class="hint">แตะการ์ดเพื่อดูความหมาย</div>
+        </div>
+        <div class="face back">
+          <div class="thai" id="fcThai">หนึ่ง</div>
+          <div class="trap" id="fcTrap" hidden></div>
+          <div class="hint">แตะเพื่อกลับด้าน</div>
+        </div>
+      </button>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-btn unknown" id="btnUnknown">🤔 ยังไม่แน่ใจ</button>
+      <button class="fc-btn known" id="btnKnown">✅ รู้แล้ว ★</button>
+    </div>
+    <div class="fc-count" id="fcCount"></div>
+  </section>
+
+  <!-- ===== 語彙クイズ ===== -->
+  <section id="secQuiz">
+    <div class="quiz-box" id="quizStart">
+      <div class="quiz-emoji">🎧</div>
+      <p style="margin-top:10px;font-weight:600">ฟังเสียง แล้วเลือกความหมายภาษาไทย<br>10 ข้อ · ตอบถูก = คำนั้นได้ ★★</p>
+      <button class="big-btn green" id="btnQuizStart">เริ่มควิซ!</button>
+    </div>
+    <div class="quiz-box" id="quizPlay" hidden>
+      <div class="quiz-meta"><span id="quizNo">ข้อ 1/10</span><span id="quizScore">คะแนน 0</span></div>
+      <div class="quiz-word" id="quizWord">?</div>
+      <div class="kanji" id="quizKanji" style="font-family:var(--jp);color:var(--sub)"></div>
+      <button class="speak-btn" id="quizSpeak">🔊 ฟังอีกครั้ง</button>
+      <div class="choices" id="quizChoices"></div>
+    </div>
+    <div class="quiz-box" id="quizEnd" hidden>
+      <div class="quiz-emoji">🎉</div>
+      <div class="result" id="quizResult"></div>
+      <button class="big-btn green" id="btnQuizAgain">เล่นอีกรอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== 時計ダッシュ ===== -->
+  <section id="secClock">
+    <div class="quiz-box" id="clockStart">
+      <div class="quiz-emoji">⏰</div>
+      <p style="margin-top:10px;font-weight:600">นาฬิกาแดช! ดูนาฬิกา แล้วเลือกวิธีอ่านภาษาญี่ปุ่น<br>ระวังกับดัก: 4時=<b>よじ</b> · 7時=<b>しちじ</b> · 9時=<b>くじ</b> · 30分=<b>はん</b></p>
+      <button class="big-btn navy" id="btnClockStart">เริ่ม 10 ข้อ!</button>
+    </div>
+    <div class="quiz-box" id="clockPlay" hidden>
+      <div class="quiz-meta"><span id="clockNo">ข้อ 1/10</span><span id="clockScore">คะแนน 0</span></div>
+      <div class="clock-wrap"><svg id="clockSvg" width="170" height="170" viewBox="0 0 100 100" role="img" aria-label="นาฬิกา"></svg></div>
+      <div class="choices" id="clockChoices"></div>
+    </div>
+    <div class="quiz-box" id="clockEnd" hidden>
+      <div class="quiz-emoji">🕐</div>
+      <div class="result" id="clockResult"></div>
+      <button class="big-btn navy" id="btnClockAgain">เล่นอีกรอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== ボス:値段オークション ===== -->
+  <section id="secBoss">
+    <div class="quiz-box" id="bossStart">
+      <div class="quiz-emoji">👑</div>
+      <p style="margin-top:10px;font-weight:600">บอสไฟต์: ประมูลราคา 60 วินาที!<br>ฟังราคาภาษาญี่ปุ่น แล้วเลือกป้ายราคาให้ถูก<br>ตอบถูกติดกันได้โบนัส 🔥</p>
+      <button class="big-btn" id="btnBossStart">เริ่มประมูล!</button>
+    </div>
+    <div class="quiz-box" id="bossPlay" hidden>
+      <div class="quiz-meta">
+        <span class="timer" id="bossTimer">60</span>
+        <span id="bossStreak" class="streak"></span>
+        <span id="bossScore">0 pt</span>
+      </div>
+      <div class="price-item" id="bossItem">🍣</div>
+      <div class="price-name" id="bossItemName">おすし</div>
+      <button class="speak-btn" id="bossSpeak">🔊 ฟังราคาอีกครั้ง</button>
+      <div class="choices" id="bossChoices"></div>
+    </div>
+    <div class="quiz-box" id="bossEnd" hidden>
+      <div class="quiz-emoji">🏆</div>
+      <div class="result" id="bossResult"></div>
+      <div class="rank" id="bossRank"></div>
+      <button class="big-btn" id="btnBossAgain">แก้มือ!</button>
+    </div>
+  </section>
+</main>
+
+<div class="voice-row">
+  <label for="voiceSel">🗣️ เสียงพูด:</label>
+  <select id="voiceSel"><option>กำลังโหลดเสียง...</option></select>
+</div>
+
+<p class="note">
+  สื่อการสอน Unit 1「すうじとじかん」(70 คำ) · โครงการ N5 一,〇〇〇語「にほんへの旅」<br>
+  ความคืบหน้าจะถูกบันทึกไว้ในเครื่องของคุณโดยอัตโนมัติ
+</p>
+
+<script>
+/* ================= 語彙データ (Unit 1: 70語) =================
+   cat: num=ตัวเลข, time=เวลา, day=วัน, month=เดือน, cal=ปฏิทิน */
+const WORDS = [
+  // --- ตัวเลข (16) ---
+  {k:"ゼロ / れい", kj:"〇", th:"ศูนย์ (0)", e:"0️⃣", cat:"num", tts:"ゼロ"},
+  {k:"いち", kj:"一", th:"หนึ่ง (1)", e:"1️⃣", cat:"num"},
+  {k:"に", kj:"二", th:"สอง (2)", e:"2️⃣", cat:"num"},
+  {k:"さん", kj:"三", th:"สาม (3)", e:"3️⃣", cat:"num"},
+  {k:"よん / し", kj:"四", th:"สี่ (4)", e:"4️⃣", cat:"num", tts:"よん", trap:"มี 2 เสียง! บอกเวลา 4時 อ่านว่า よじ"},
+  {k:"ご", kj:"五", th:"ห้า (5)", e:"5️⃣", cat:"num"},
+  {k:"ろく", kj:"六", th:"หก (6)", e:"6️⃣", cat:"num"},
+  {k:"なな / しち", kj:"七", th:"เจ็ด (7)", e:"7️⃣", cat:"num", tts:"なな", trap:"มี 2 เสียง! บอกเวลา 7時 อ่านว่า しちじ"},
+  {k:"はち", kj:"八", th:"แปด (8)", e:"8️⃣", cat:"num"},
+  {k:"きゅう / く", kj:"九", th:"เก้า (9)", e:"9️⃣", cat:"num", tts:"きゅう", trap:"มี 2 เสียง! บอกเวลา 9時 อ่านว่า くじ"},
+  {k:"じゅう", kj:"十", th:"สิบ (10)", e:"🔟", cat:"num"},
+  {k:"ひゃく", kj:"百", th:"ร้อย (100)", e:"💯", cat:"num", trap:"300=さんびゃく · 600=ろっぴゃく · 800=はっぴゃく"},
+  {k:"せん", kj:"千", th:"พัน (1,000)", e:"💴", cat:"num", trap:"3000=さんぜん · 8000=はっせん"},
+  {k:"まん", kj:"万", th:"หมื่น (10,000)", e:"💰", cat:"num", tts:"いちまん", trap:"10,000 ต้องพูดว่า いちまん (มี いち เสมอ!)"},
+  {k:"えん", kj:"円", th:"เยน (สกุลเงินญี่ปุ่น)", e:"🪙", cat:"num"},
+  {k:"ばんごう", kj:"番号", th:"หมายเลข", e:"🔢", cat:"num"},
+
+  // --- เวลา (17) ---
+  {k:"〜じ", kj:"〜時", th:"...โมง / นาฬิกา", e:"🕐", cat:"time", tts:"いちじ、にじ、さんじ", trap:"4時=よじ · 7時=しちじ · 9時=くじ"},
+  {k:"〜ふん / ぷん", kj:"〜分", th:"...นาที", e:"⏱️", cat:"time", tts:"ごふん、じゅっぷん", trap:"10分=じゅっぷん · 6分=ろっぷん"},
+  {k:"はん", kj:"半", th:"ครึ่ง (30 นาที)", e:"🕜", cat:"time", trap:"7:30 = しちじはん"},
+  {k:"じかん", kj:"時間", th:"ชั่วโมง / เวลา", e:"⏳", cat:"time"},
+  {k:"ごぜん", kj:"午前", th:"ก่อนเที่ยง (AM)", e:"🌅", cat:"time"},
+  {k:"ごご", kj:"午後", th:"หลังเที่ยง (PM)", e:"🌇", cat:"time"},
+  {k:"あさ", kj:"朝", th:"เช้า", e:"☀️", cat:"time"},
+  {k:"ひる", kj:"昼", th:"กลางวัน / เที่ยง", e:"🕛", cat:"time"},
+  {k:"よる", kj:"夜", th:"กลางคืน", e:"🌙", cat:"time"},
+  {k:"ばん", kj:"晩", th:"ค่ำ", e:"🌆", cat:"time"},
+  {k:"ゆうがた", kj:"夕方", th:"ตอนเย็น", e:"🌤️", cat:"time"},
+  {k:"いま", kj:"今", th:"ตอนนี้", e:"📍", cat:"time"},
+  {k:"まいにち", kj:"毎日", th:"ทุกวัน", e:"🔁", cat:"time"},
+  {k:"まいあさ", kj:"毎朝", th:"ทุกเช้า", e:"🌄", cat:"time"},
+  {k:"まいばん", kj:"毎晩", th:"ทุกคืน", e:"🌃", cat:"time"},
+  {k:"なんじ", kj:"何時", th:"กี่โมง", e:"❓", cat:"time"},
+  {k:"いつ", kj:"", th:"เมื่อไหร่", e:"🤷", cat:"time"},
+
+  // --- วันในสัปดาห์ (9) ---
+  {k:"にちようび", kj:"日曜日", th:"วันอาทิตย์", e:"🔴", cat:"day", trap:"日=พระอาทิตย์ → วันอาทิตย์ เหมือนภาษาไทยเลย!"},
+  {k:"げつようび", kj:"月曜日", th:"วันจันทร์", e:"🌙", cat:"day", trap:"月=พระจันทร์ → วันจันทร์ ตรงกับไทย!"},
+  {k:"かようび", kj:"火曜日", th:"วันอังคาร", e:"🔥", cat:"day"},
+  {k:"すいようび", kj:"水曜日", th:"วันพุธ", e:"💧", cat:"day"},
+  {k:"もくようび", kj:"木曜日", th:"วันพฤหัสบดี", e:"🌳", cat:"day"},
+  {k:"きんようび", kj:"金曜日", th:"วันศุกร์", e:"✨", cat:"day"},
+  {k:"どようび", kj:"土曜日", th:"วันเสาร์", e:"🪨", cat:"day"},
+  {k:"ようび", kj:"曜日", th:"วัน (ในสัปดาห์)", e:"📆", cat:"day"},
+  {k:"しゅうまつ", kj:"週末", th:"สุดสัปดาห์", e:"🎈", cat:"day"},
+
+  // --- เดือน (12) ---
+  {k:"いちがつ", kj:"一月", th:"มกราคม", e:"🎍", cat:"month"},
+  {k:"にがつ", kj:"二月", th:"กุมภาพันธ์", e:"⛄", cat:"month"},
+  {k:"さんがつ", kj:"三月", th:"มีนาคม", e:"🌸", cat:"month"},
+  {k:"しがつ", kj:"四月", th:"เมษายน", e:"🌷", cat:"month", trap:"ระวัง! อ่านว่า しがつ ไม่ใช่ よんがつ"},
+  {k:"ごがつ", kj:"五月", th:"พฤษภาคม", e:"🎏", cat:"month"},
+  {k:"ろくがつ", kj:"六月", th:"มิถุนายน", e:"☔", cat:"month"},
+  {k:"しちがつ", kj:"七月", th:"กรกฎาคม", e:"🎋", cat:"month", trap:"ระวัง! อ่านว่า しちがつ ไม่ใช่ なながつ"},
+  {k:"はちがつ", kj:"八月", th:"สิงหาคม", e:"🎆", cat:"month"},
+  {k:"くがつ", kj:"九月", th:"กันยายน", e:"🌾", cat:"month", trap:"ระวัง! อ่านว่า くがつ ไม่ใช่ きゅうがつ"},
+  {k:"じゅうがつ", kj:"十月", th:"ตุลาคม", e:"🍁", cat:"month"},
+  {k:"じゅういちがつ", kj:"十一月", th:"พฤศจิกายน", e:"🍂", cat:"month"},
+  {k:"じゅうにがつ", kj:"十二月", th:"ธันวาคม", e:"🎄", cat:"month"},
+
+  // --- ปฏิทิน・ช่วงเวลา (16) ---
+  {k:"きょう", kj:"今日", th:"วันนี้", e:"📅", cat:"cal", trap:"เสียงอ่านพิเศษ ไม่ใช่ こんにち"},
+  {k:"あした", kj:"明日", th:"พรุ่งนี้", e:"➡️", cat:"cal", trap:"เสียงอ่านพิเศษ"},
+  {k:"きのう", kj:"昨日", th:"เมื่อวาน", e:"⬅️", cat:"cal", trap:"เสียงอ่านพิเศษ"},
+  {k:"おととい", kj:"一昨日", th:"เมื่อวานซืน", e:"⏪", cat:"cal"},
+  {k:"あさって", kj:"明後日", th:"มะรืนนี้", e:"⏩", cat:"cal"},
+  {k:"こんしゅう", kj:"今週", th:"สัปดาห์นี้", e:"🗓️", cat:"cal"},
+  {k:"らいしゅう", kj:"来週", th:"สัปดาห์หน้า", e:"🗓️", cat:"cal"},
+  {k:"せんしゅう", kj:"先週", th:"สัปดาห์ที่แล้ว", e:"🗓️", cat:"cal"},
+  {k:"こんげつ", kj:"今月", th:"เดือนนี้", e:"📆", cat:"cal"},
+  {k:"らいげつ", kj:"来月", th:"เดือนหน้า", e:"📆", cat:"cal"},
+  {k:"せんげつ", kj:"先月", th:"เดือนที่แล้ว", e:"📆", cat:"cal"},
+  {k:"ことし", kj:"今年", th:"ปีนี้", e:"🎯", cat:"cal", trap:"เสียงอ่านพิเศษ ことし"},
+  {k:"らいねん", kj:"来年", th:"ปีหน้า", e:"🎯", cat:"cal"},
+  {k:"きょねん", kj:"去年", th:"ปีที่แล้ว", e:"🎯", cat:"cal"},
+  {k:"たんじょうび", kj:"誕生日", th:"วันเกิด", e:"🎂", cat:"cal"},
+  {k:"カレンダー", kj:"", th:"ปฏิทิน", e:"🗓️", cat:"cal"}
+];
+const N = WORDS.length;   // 70
+const CATS = [
+  {id:"all", label:"ทั้งหมด"},
+  {id:"num", label:"🔢 ตัวเลข"},
+  {id:"time", label:"⏰ เวลา"},
+  {id:"day", label:"📆 วัน"},
+  {id:"month", label:"🌸 เดือน"},
+  {id:"cal", label:"🗓️ ปฏิทิน"}
+];
+
+/* 進捗: 0=まだ, 1=★, 2=★★ */
+const mastery = new Array(N).fill(0);
+/* 端末に進捗を保存(非対応環境では無視される) */
+function saveProgress(){ try{ localStorage.setItem("n5tabi_u1", JSON.stringify(mastery)); }catch(e){} }
+function loadProgress(){
+  try{
+    const d = JSON.parse(localStorage.getItem("n5tabi_u1") || "null");
+    if(Array.isArray(d) && d.length === N) d.forEach((v,i)=> mastery[i] = v);
+  }catch(e){}
+}
+
+const $ = id => document.getElementById(id);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+
+/* ===== 音声システム =====
+   1) audio/u1_XX.mp3(または .wav)が存在すればそれを再生(アクセント保証)
+   2) なければ端末TTSにフォールバック(品質の高い日本語音声を優先選択) */
+const UNIT = "u1";
+
+let jaVoices = [], chosenVoice = null;
+function rankVoice(v){
+  const PRI = ["Google 日本語","Nanami","Keita","Sayaka","Kyoko","O-Ren","Otoya"];
+  const i = PRI.findIndex(p => v.name.includes(p));
+  return i < 0 ? 99 : i;
+}
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  jaVoices = speechSynthesis.getVoices()
+    .filter(v => v.lang && v.lang.toLowerCase().startsWith("ja"))
+    .sort((a,b) => rankVoice(a)-rankVoice(b));
+  const sel = $("voiceSel");
+  sel.innerHTML = "";
+  if(jaVoices.length === 0){
+    sel.innerHTML = "<option>ไม่พบเสียงภาษาญี่ปุ่นในเครื่องนี้</option>";
+    chosenVoice = null; return;
+  }
+  jaVoices.forEach((v,i)=>{
+    const o = document.createElement("option");
+    o.value = i; o.textContent = v.name;
+    sel.appendChild(o);
+  });
+  chosenVoice = jaVoices[0];
+  sel.value = 0;
+  sel.onchange = ()=>{ chosenVoice = jaVoices[sel.value]; speak("こんにちは"); };
+}
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = loadVoices;
+
+function speak(text, rate=0.9){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(chosenVoice) u.voice = chosenVoice;
+    u.lang = "ja-JP"; u.rate = rate;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+const ttsOf = w => (w.tts || w.k).replace(/〜/g,"");
+/* 録音ファイル優先再生: audio/u1_00.mp3 → .wav → TTS の順に試す */
+function tryPlay(srcs, fallback){
+  if(srcs.length === 0){ fallback(); return; }
+  const a = new Audio(srcs[0]);
+  let failed = false;
+  const next = ()=>{ if(!failed){ failed = true; tryPlay(srcs.slice(1), fallback); } };
+  a.onerror = next;
+  a.play().catch(next);
+}
+function playWord(i){
+  const base = "audio/" + UNIT + "_" + String(i).padStart(2,"0");
+  tryPlay([base+".mp3", base+".wav"], ()=> speak(ttsOf(WORDS[i])));
+}
+
+function updateProgress(){
+  const done = mastery.filter(m=>m>=2).length;
+  $("progressText").textContent = `${done} / ${N} คำ`;
+  const pct = done/N*100;
+  $("progressFill").style.width = pct+"%";
+  $("trainMarker").style.left = `calc(6px + ${pct/100} * (100% - 12px))`;
+  saveProgress();
+}
+/* ゲーム正解→該当カテゴリーの未★★語を1つずつ★★に */
+function creditCategory(cat){
+  const i = WORDS.findIndex((w,idx)=>w.cat===cat && mastery[idx]<2);
+  if(i>=0){ mastery[i]=2; updateProgress(); }
+}
+
+/* ================= タブ ================= */
+const tabs = {tabCards:"secCards", tabQuiz:"secQuiz", tabClock:"secClock", tabBoss:"secBoss"};
+Object.keys(tabs).forEach(id=>{
+  $(id).addEventListener("click", ()=>{
+    Object.keys(tabs).forEach(t=>{
+      $(t).classList.toggle("active", t===id);
+      $(t).setAttribute("aria-selected", t===id);
+      document.getElementById(tabs[t]).classList.toggle("show", t===id);
+    });
+  });
+});
+
+/* ================= フラッシュカード + カテゴリー + チャンツ ================= */
+let curCat = "all";
+let fcOrder = [], fcIdx = 0;
+const flashcard = $("flashcard");
+
+function buildChips(){
+  const bar = $("chipBar");
+  CATS.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "chip"+(c.id==="all"?" active":"");
+    b.textContent = c.label;
+    b.addEventListener("click", ()=>{
+      curCat = c.id;
+      [...bar.children].forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      resetDeck();
+    });
+    bar.appendChild(b);
+  });
+}
+function deckIds(){
+  return [...WORDS.keys()].filter(i=>curCat==="all"||WORDS[i].cat===curCat);
+}
+function resetDeck(){ fcOrder = shuffle(deckIds()); fcIdx = 0; renderCard(); }
+function renderCard(){
+  const w = WORDS[fcOrder[fcIdx]];
+  flashcard.classList.remove("flipped");
+  $("fcEmoji").textContent = w.e;
+  $("fcWord").textContent = w.k;
+  $("fcKanji").textContent = w.kj || " ";
+  $("fcThai").textContent = w.th;
+  const trap = $("fcTrap");
+  if(w.trap){trap.hidden=false; trap.textContent="⚠️ "+w.trap;} else trap.hidden=true;
+  const known = mastery.filter(m=>m>=1).length;
+  $("fcCount").innerHTML = `การ์ดที่ ${fcIdx+1}/${fcOrder.length} · <span class="star">★</span> รู้แล้ว ${known}/${N} คำ`;
+}
+flashcard.addEventListener("click", ()=> flashcard.classList.toggle("flipped"));
+$("fcSpeak").addEventListener("click", e=>{ e.stopPropagation(); playWord(fcOrder[fcIdx]); });
+function nextCard(){ fcIdx++; if(fcIdx>=fcOrder.length){ fcOrder = shuffle(deckIds()); fcIdx=0; } renderCard(); }
+$("btnKnown").addEventListener("click", ()=>{ const i=fcOrder[fcIdx]; if(mastery[i]<1)mastery[i]=1; saveProgress(); nextCard(); });
+$("btnUnknown").addEventListener("click", nextCard);
+
+/* チャンツ: 現在カテゴリーの語を順番に読み上げ(リズム記憶用) */
+$("btnChant").addEventListener("click", ()=>{
+  const ids = curCat==="all" ? deckIds().slice(0,12) : deckIds();
+  const text = ids.map(i=>ttsOf(WORDS[i])).join("、");
+  speak(text, 1.0);
+});
+
+/* ================= 語彙クイズ (★★) ================= */
+function makeVocabQ(){
+  const qi = Math.floor(Math.random()*N);
+  const wrongs = shuffle([...WORDS.keys()].filter(i=>i!==qi)).slice(0,3);
+  return {qi, options: shuffle([qi,...wrongs])};
+}
+let quizQs=[], quizNo=0, quizScore=0, quizLock=false;
+$("btnQuizStart").addEventListener("click", startQuiz);
+$("btnQuizAgain").addEventListener("click", startQuiz);
+function startQuiz(){
+  quizQs = Array.from({length:10}, makeVocabQ);
+  quizNo=0; quizScore=0;
+  $("quizStart").hidden=true; $("quizEnd").hidden=true; $("quizPlay").hidden=false;
+  showQuizQ();
+}
+function showQuizQ(){
+  quizLock=false;
+  const {qi} = quizQs[quizNo];
+  const w = WORDS[qi];
+  $("quizNo").textContent = `ข้อ ${quizNo+1}/10`;
+  $("quizScore").textContent = `คะแนน ${quizScore}`;
+  $("quizWord").textContent = w.k;
+  $("quizKanji").textContent = w.kj || "";
+  playWord(qi);
+  const box = $("quizChoices"); box.innerHTML="";
+  quizQs[quizNo].options.forEach(oi=>{
+    const b=document.createElement("button");
+    b.className="choice"; b.textContent=WORDS[oi].th;
+    b.addEventListener("click", ()=>answerQuiz(b,oi,qi));
+    box.appendChild(b);
+  });
+}
+$("quizSpeak").addEventListener("click", ()=> playWord(quizQs[quizNo].qi));
+function answerQuiz(btn,oi,qi){
+  if(quizLock)return; quizLock=true;
+  const ok = oi===qi;
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok){
+    [...$("quizChoices").children].forEach(c=>{ if(c.textContent===WORDS[qi].th)c.classList.add("correct"); });
+  }else{
+    quizScore++; mastery[qi]=2; updateProgress();
+  }
+  setTimeout(()=>{ quizNo++; quizNo<10 ? showQuizQ() : endQuiz(); }, 900);
+}
+function endQuiz(){
+  $("quizPlay").hidden=true; $("quizEnd").hidden=false;
+  const msg = quizScore>=9?"สุดยอด! 🌟":quizScore>=6?"ดีมาก! 💪":"ทบทวนการ์ดแล้วมาใหม่นะ 📇";
+  $("quizResult").innerHTML = `ตอบถูก <b>${quizScore}/10</b> ข้อ<br>${msg}`;
+}
+
+/* ================= 時計ダッシュ ================= */
+const HOUR_R = {1:"いちじ",2:"にじ",3:"さんじ",4:"よじ",5:"ごじ",6:"ろくじ",7:"しちじ",8:"はちじ",9:"くじ",10:"じゅうじ",11:"じゅういちじ",12:"じゅうにじ"};
+const HOUR_TRAP = {4:"しじ",7:"ななじ",9:"きゅうじ"};   // わざと間違い選択肢
+const MIN_R = {0:"",5:"ごふん",10:"じゅっぷん",15:"じゅうごふん",20:"にじゅっぷん",30:"はん",40:"よんじゅっぷん",45:"よんじゅうごふん",50:"ごじゅっぷん"};
+const MINUTES = Object.keys(MIN_R).map(Number);
+
+function timeReading(h,m){ return HOUR_R[h]+MIN_R[m]; }
+function randomTime(){ return {h:1+Math.floor(Math.random()*12), m:MINUTES[Math.floor(Math.random()*MINUTES.length)]}; }
+
+function drawClock(h,m){
+  const hourAngle = ((h%12)+m/60)*30, minAngle = m*6;
+  const num = [...Array(12)].map((_,i)=>{
+    const a=(i+1)*30*Math.PI/180, x=50+38*Math.sin(a), y=50-38*Math.cos(a);
+    return `<text x="${x}" y="${y+3}" font-size="8" text-anchor="middle" fill="#1E3A6E" font-weight="700">${i+1}</text>`;
+  }).join("");
+  $("clockSvg").innerHTML = `
+    <circle cx="50" cy="50" r="47" fill="#fff" stroke="#1E3A6E" stroke-width="4"/>
+    ${num}
+    <line x1="50" y1="50" x2="${50+20*Math.sin(hourAngle*Math.PI/180)}" y2="${50-20*Math.cos(hourAngle*Math.PI/180)}" stroke="#1E3A6E" stroke-width="5" stroke-linecap="round"/>
+    <line x1="50" y1="50" x2="${50+30*Math.sin(minAngle*Math.PI/180)}" y2="${50-30*Math.cos(minAngle*Math.PI/180)}" stroke="#E7222E" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="2.5" fill="#1E3A6E"/>`;
+}
+let clockNo=0, clockScore=0, clockLock=false, clockAns="";
+$("btnClockStart").addEventListener("click", startClock);
+$("btnClockAgain").addEventListener("click", startClock);
+function startClock(){
+  clockNo=0; clockScore=0;
+  $("clockStart").hidden=true; $("clockEnd").hidden=true; $("clockPlay").hidden=false;
+  showClockQ();
+}
+function showClockQ(){
+  clockLock=false;
+  const {h,m} = randomTime();
+  drawClock(h,m);
+  clockAns = timeReading(h,m);
+  $("clockNo").textContent = `ข้อ ${clockNo+1}/10`;
+  $("clockScore").textContent = `คะแนน ${clockScore}`;
+  const opts = new Set([clockAns]);
+  if(HOUR_TRAP[h]) opts.add(HOUR_TRAP[h]+MIN_R[m]);           // 読み方トラップ
+  if(m===30) opts.add(HOUR_R[h]+"さんじゅっぷん");             // はん vs 30分
+  while(opts.size<4){
+    const t = randomTime();
+    opts.add(timeReading(t.h,t.m));
+  }
+  const box = $("clockChoices"); box.innerHTML="";
+  shuffle([...opts]).slice(0,4).forEach(r=>{
+    const b=document.createElement("button");
+    b.className="choice jpchoice"; b.textContent=r;
+    b.addEventListener("click", ()=>answerClock(b,r));
+    box.appendChild(b);
+  });
+}
+function answerClock(btn,r){
+  if(clockLock)return; clockLock=true;
+  const ok = r===clockAns;
+  btn.classList.add(ok?"correct":"wrong");
+  speak(clockAns);
+  if(!ok){
+    [...$("clockChoices").children].forEach(c=>{ if(c.textContent===clockAns)c.classList.add("correct"); });
+  }else{
+    clockScore++; creditCategory("time");
+  }
+  setTimeout(()=>{ clockNo++; clockNo<10 ? showClockQ() : endClock(); }, 1100);
+}
+function endClock(){
+  $("clockPlay").hidden=true; $("clockEnd").hidden=false;
+  const msg = clockScore>=9?"เป็นเจ้าแห่งเวลาแล้ว! ⏰👑":clockScore>=6?"เยี่ยม! ระวัง よじ・しちじ・くじ อีกนิด":"ลองฟังชานท์เวลา แล้วมาใหม่นะ";
+  $("clockResult").innerHTML = `ตอบถูก <b>${clockScore}/10</b> ข้อ<br>${msg}`;
+}
+
+/* ================= ボス:値段オークション ================= */
+const ITEMS = [
+  {e:"🍣",n:"おすし"},{e:"📷",n:"カメラ"},{e:"👟",n:"くつ"},{e:"🎸",n:"ギター"},
+  {e:"🍜",n:"ラーメン"},{e:"🎁",n:"プレゼント"},{e:"☕",n:"コーヒー"},{e:"👕",n:"シャツ"},
+  {e:"📱",n:"スマホケース"},{e:"🧸",n:"ぬいぐるみ"},{e:"🎂",n:"ケーキ"},{e:"⌚",n:"とけい"}
+];
+function randomPrice(){
+  const pat = Math.floor(Math.random()*4);
+  if(pat===0) return (1+Math.floor(Math.random()*9))*100;                          // 100–900
+  if(pat===1) return (1+Math.floor(Math.random()*9))*100 + (1+Math.floor(Math.random()*9))*10; // 110–990
+  if(pat===2) return (1+Math.floor(Math.random()*9))*1000 + Math.floor(Math.random()*10)*100;  // 1000–9900
+  return (1+Math.floor(Math.random()*5))*10000 + Math.floor(Math.random()*10)*1000;            // 10000–59000
+}
+function makePriceOptions(p){
+  const set = new Set([p]);
+  const cand = [Number(String(p).split("").reverse().join("")), p*10, Math.round(p/10),
+                p+(p>=1000?1000:100), Math.max(100,p-(p>=1000?1000:100))];
+  cand.forEach(x=>{ if(set.size<4 && x>=10 && x!==p && x===Math.round(x)) set.add(x); });
+  while(set.size<4){ const r=randomPrice(); if(r!==p) set.add(r); }
+  return shuffle([...set]);
+}
+const fmt = n => "¥"+n.toLocaleString("en-US");
+
+let bossTime=60, bossScore=0, bossStreak=0, bossTimerId=null, bossLock=false, bossPrice=0;
+$("btnBossStart").addEventListener("click", startBoss);
+$("btnBossAgain").addEventListener("click", startBoss);
+$("bossSpeak").addEventListener("click", ()=> speak(bossPrice+"円"));
+function startBoss(){
+  bossTime=60; bossScore=0; bossStreak=0;
+  $("bossStart").hidden=true; $("bossEnd").hidden=true; $("bossPlay").hidden=false;
+  clearInterval(bossTimerId);
+  bossTimerId = setInterval(()=>{
+    bossTime--; $("bossTimer").textContent=bossTime;
+    if(bossTime<=0) endBoss();
+  },1000);
+  showBossQ();
+}
+function showBossQ(){
+  bossLock=false;
+  const item = ITEMS[Math.floor(Math.random()*ITEMS.length)];
+  bossPrice = randomPrice();
+  $("bossTimer").textContent=bossTime;
+  $("bossScore").textContent=bossScore+" pt";
+  $("bossStreak").textContent = bossStreak>=2?`🔥x${bossStreak}`:"";
+  $("bossItem").textContent=item.e;
+  $("bossItemName").textContent=item.n;
+  speak(bossPrice+"円");
+  const box=$("bossChoices"); box.innerHTML="";
+  makePriceOptions(bossPrice).forEach(p=>{
+    const b=document.createElement("button");
+    b.className="choice jpchoice"; b.textContent=fmt(p);
+    b.addEventListener("click", ()=>answerBoss(b,p));
+    box.appendChild(b);
+  });
+}
+function answerBoss(btn,p){
+  if(bossLock)return; bossLock=true;
+  const ok = p===bossPrice;
+  btn.classList.add(ok?"correct":"wrong");
+  if(ok){
+    bossStreak++;
+    bossScore += 10 + Math.min(bossStreak-1,5)*2;
+    creditCategory("num");
+  }else{
+    bossStreak=0;
+    [...$("bossChoices").children].forEach(c=>{ if(c.textContent===fmt(bossPrice))c.classList.add("correct"); });
+  }
+  setTimeout(showBossQ, ok?400:800);
+}
+function endBoss(){
+  clearInterval(bossTimerId);
+  $("bossPlay").hidden=true; $("bossEnd").hidden=false;
+  const rank = bossScore>=250?"💰 ราชาแห่งการประมูล (オークション王)"
+            :bossScore>=170?"🧑‍💼 พ่อค้าแม่ค้ามือโปร (商人)"
+            :bossScore>=90 ?"🛍️ นักช้อปฝึกหัด (買い物見習い)"
+            :"🌱 นักเดินทางฝึกหัด";
+  $("bossResult").innerHTML = `คะแนนรวม <b>${bossScore} pt</b>`;
+  $("bossRank").textContent = rank;
+}
+
+/* ================= 初期化 ================= */
+loadVoices();
+loadProgress();
+buildChips();
+resetDeck();
+updateProgress();
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>

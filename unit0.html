@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A6E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Unit 0 カタカナ語ブースト | にほんへの旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E3A6E;      /* 駅名標ネイビー */
+    --green:#00A063;     /* 路線グリーン */
+    --red:#E7222E;       /* 現在地レッド */
+    --yellow:#FFC81E;    /* ホーム黄色線 */
+    --bg:#EEF3F8;
+    --ink:#1B2430;
+    --sub:#5B6B80;
+    --white:#FFFFFF;
+    --radius:16px;
+    --jp:'M PLUS Rounded 1c','Noto Sans JP',sans-serif;
+    --th:'Noto Sans Thai','M PLUS Rounded 1c',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    padding:16px 12px 48px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  button{font-family:inherit;cursor:pointer;border:none}
+  button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+
+  /* ===== 駅名標ヘッダー ===== */
+  .station-sign{
+    width:100%;max-width:640px;
+    background:var(--white);
+    border-radius:var(--radius);
+    box-shadow:0 4px 0 rgba(30,58,110,.15);
+    overflow:hidden;
+    border:3px solid var(--navy);
+  }
+  .sign-main{
+    text-align:center;padding:18px 16px 10px;
+  }
+  .sign-main .kana{
+    font-family:var(--jp);font-weight:800;
+    font-size:clamp(26px,7vw,40px);color:var(--navy);letter-spacing:.04em;
+  }
+  .sign-main .romaji{
+    font-family:var(--jp);font-weight:700;text-transform:uppercase;
+    letter-spacing:.25em;font-size:12px;color:var(--sub);margin-top:2px;
+  }
+  .sign-line{
+    display:flex;align-items:center;gap:8px;
+    padding:8px 14px 14px;
+  }
+  .sign-line .prev,.sign-line .next{
+    font-size:12px;color:var(--sub);white-space:nowrap;font-weight:600;
+  }
+  .sign-line .track{
+    flex:1;height:14px;border-radius:7px;background:var(--green);position:relative;
+  }
+  .sign-line .track::before,.sign-line .track::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:10px;height:10px;border-radius:50%;background:var(--white);
+  }
+  .sign-line .track::before{left:6px}
+  .sign-line .track::after{right:6px}
+  #trainMarker{
+    position:absolute;top:50%;left:6px;transform:translate(-50%,-58%);
+    font-size:22px;transition:left .6s ease;
+  }
+  /* ホーム黄色線=進捗バー */
+  .platform{
+    width:100%;max-width:640px;margin-top:12px;
+    background:var(--white);border-radius:var(--radius);
+    padding:12px 16px;box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .platform .label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
+  .platform .bar{height:12px;background:#E3E9F1;border-radius:6px;overflow:hidden}
+  .platform .fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,var(--yellow),var(--yellow) 10px,#E8AE00 10px,#E8AE00 20px);transition:width .5s ease}
+
+  /* ===== モードタブ ===== */
+  .tabs{
+    width:100%;max-width:640px;display:flex;gap:8px;margin-top:14px;
+  }
+  .tab{
+    flex:1;padding:12px 4px;border-radius:12px;font-weight:700;font-size:14px;
+    background:var(--white);color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+    transition:transform .1s;
+  }
+  .tab:active{transform:translateY(2px)}
+  .tab.active{background:var(--navy);color:var(--white)}
+
+  main{width:100%;max-width:640px;margin-top:14px}
+  section{display:none}
+  section.show{display:block;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+
+  /* ===== フラッシュカード ===== */
+  .card-stage{perspective:1200px;display:flex;justify-content:center}
+  .flashcard{
+    width:100%;max-width:420px;height:300px;position:relative;
+    transform-style:preserve-3d;transition:transform .45s;cursor:pointer;border:none;background:none;
+  }
+  .flashcard.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    background:var(--white);border-radius:20px;
+    box-shadow:0 6px 0 rgba(30,58,110,.15);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;border:3px solid var(--navy);
+  }
+  .face.back{transform:rotateY(180deg);border-color:var(--green)}
+  .face .emoji{font-size:56px}
+  .face .word{font-family:var(--jp);font-weight:800;font-size:38px;color:var(--navy);margin-top:6px}
+  .face .hint{font-size:13px;color:var(--sub);margin-top:10px}
+  .face .thai{font-size:30px;font-weight:700;color:var(--green)}
+  .face .romaji{font-family:var(--jp);font-size:15px;color:var(--sub);letter-spacing:.12em;margin-top:4px}
+  .face .trap{
+    margin-top:12px;font-size:13px;background:#FFF6DC;border:2px dashed var(--yellow);
+    border-radius:10px;padding:8px 12px;color:#7A5A00;max-width:100%;
+  }
+  .speak-btn{
+    margin-top:12px;background:var(--navy);color:var(--white);
+    border-radius:999px;padding:8px 18px;font-size:14px;font-weight:700;
+  }
+  .fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  .fc-btn{
+    padding:12px 20px;border-radius:12px;font-weight:700;font-size:15px;
+    box-shadow:0 3px 0 rgba(0,0,0,.12);
+  }
+  .fc-btn.unknown{background:var(--white);color:var(--sub)}
+  .fc-btn.known{background:var(--green);color:var(--white)}
+  .fc-count{text-align:center;margin-top:10px;font-size:13px;color:var(--sub)}
+  .star{color:#E8AE00}
+
+  /* ===== クイズ / ボス共通 ===== */
+  .quiz-box{
+    background:var(--white);border-radius:20px;border:3px solid var(--navy);
+    box-shadow:0 6px 0 rgba(30,58,110,.15);padding:22px 18px;text-align:center;
+  }
+  .quiz-word{font-family:var(--jp);font-weight:800;font-size:36px;color:var(--navy)}
+  .quiz-emoji{font-size:44px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .choice{
+    padding:14px 8px;border-radius:12px;background:#F0F4FA;font-size:16px;font-weight:600;
+    border:2px solid transparent;transition:transform .08s;
+  }
+  .choice:active{transform:scale(.97)}
+  .choice.correct{background:#DFF7EC;border-color:var(--green);color:#00693F}
+  .choice.wrong{background:#FDE3E5;border-color:var(--red);color:#9B1720}
+  .quiz-meta{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--sub);margin-bottom:12px}
+  .big-btn{
+    display:block;width:100%;margin-top:16px;padding:14px;border-radius:14px;
+    background:var(--red);color:var(--white);font-size:17px;font-weight:800;
+    box-shadow:0 4px 0 #A5121C;
+  }
+  .big-btn.green{background:var(--green);box-shadow:0 4px 0 #006B42}
+  .result{font-size:17px;line-height:1.7;margin-top:10px}
+  .rank{font-family:var(--jp);font-size:26px;font-weight:800;color:var(--navy);margin-top:8px}
+  .timer{
+    font-family:var(--jp);font-weight:800;font-size:22px;color:var(--red);
+  }
+  .streak{color:#E8AE00;font-weight:800}
+  .note{font-size:12px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+  .voice-row{
+    width:100%;max-width:640px;margin-top:16px;background:var(--white);
+    border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;
+    font-size:13px;font-weight:600;color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .voice-row select{flex:1;font-family:inherit;font-size:13px;padding:6px;border-radius:8px;border:2px solid #DDE5EF;background:#F7FAFD}
+  .back-link{width:100%;max-width:640px;font-size:14px;font-weight:700;color:var(--navy);text-decoration:none;margin-bottom:8px;display:block}
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">◀ กลับไปที่แผนที่การเดินทาง</a>
+
+<!-- 駅名標 -->
+<header class="station-sign" role="banner">
+  <div class="sign-main">
+    <div class="kana">カタカナごブースト</div>
+    <div class="romaji">Unit 0 · Katakana-go Boost</div>
+  </div>
+  <div class="sign-line" aria-hidden="true">
+    <span class="prev">◀ ดอนเมือง<br>Don Mueang</span>
+    <span class="track"><span id="trainMarker">🚆</span></span>
+    <span class="next">นาริตะ ▶<br>Narita</span>
+  </div>
+</header>
+
+<!-- ホーム黄色線 進捗 -->
+<div class="platform">
+  <div class="label">
+    <span>ความคืบหน้า (★★ ฟังเข้าใจแล้ว)</span>
+    <span id="progressText">0 / 40 คำ</span>
+  </div>
+  <div class="bar"><div class="fill" id="progressFill"></div></div>
+</div>
+
+<!-- モードタブ -->
+<nav class="tabs" role="tablist">
+  <button class="tab active" id="tabCards"  role="tab" aria-selected="true">📇 การ์ดคำศัพท์</button>
+  <button class="tab" id="tabQuiz"  role="tab" aria-selected="false">🎧 ควิซ ★★</button>
+  <button class="tab" id="tabBoss"  role="tab" aria-selected="false">👑 บอสไฟต์</button>
+</nav>
+
+<main>
+  <!-- ===== フラッシュカード ===== -->
+  <section id="secCards" class="show">
+    <div class="card-stage">
+      <button class="flashcard" id="flashcard" aria-label="พลิกการ์ด">
+        <div class="face front">
+          <div class="emoji" id="fcEmoji">☕</div>
+          <div class="word" id="fcWord">コーヒー</div>
+          <span class="speak-btn" id="fcSpeak">🔊 ฟังเสียง</span>
+          <div class="hint">แตะการ์ดเพื่อดูความหมาย</div>
+        </div>
+        <div class="face back">
+          <div class="thai" id="fcThai">กาแฟ</div>
+          <div class="romaji" id="fcRomaji">kōhī</div>
+          <div class="trap" id="fcTrap" hidden></div>
+          <div class="hint">แตะเพื่อกลับด้าน</div>
+        </div>
+      </button>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-btn unknown" id="btnUnknown">🤔 ยังไม่แน่ใจ</button>
+      <button class="fc-btn known" id="btnKnown">✅ รู้แล้ว ★</button>
+    </div>
+    <div class="fc-count" id="fcCount"></div>
+  </section>
+
+  <!-- ===== クイズ ===== -->
+  <section id="secQuiz">
+    <div class="quiz-box" id="quizStart">
+      <div class="quiz-emoji">🎧</div>
+      <p style="margin-top:10px;font-weight:600">ฟังเสียง แล้วเลือกความหมายภาษาไทย<br>10 ข้อ · ตอบถูก = คำนั้นได้ ★★</p>
+      <button class="big-btn green" id="btnQuizStart">เริ่มควิซ!</button>
+    </div>
+    <div class="quiz-box" id="quizPlay" hidden>
+      <div class="quiz-meta"><span id="quizNo">ข้อ 1/10</span><span id="quizScore">คะแนน 0</span></div>
+      <div class="quiz-word" id="quizWord">?</div>
+      <button class="speak-btn" id="quizSpeak">🔊 ฟังอีกครั้ง</button>
+      <div class="choices" id="quizChoices"></div>
+    </div>
+    <div class="quiz-box" id="quizEnd" hidden>
+      <div class="quiz-emoji">🎉</div>
+      <div class="result" id="quizResult"></div>
+      <button class="big-btn green" id="btnQuizAgain">เล่นอีกรอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== ボス戦 ===== -->
+  <section id="secBoss">
+    <div class="quiz-box" id="bossStart">
+      <div class="quiz-emoji">👑</div>
+      <p style="margin-top:10px;font-weight:600">บอสไฟต์: สปีดคิง 60 วินาที!<br>ตอบให้ถูกให้ไวที่สุด · ตอบถูกติดกันได้โบนัส 🔥</p>
+      <button class="big-btn" id="btnBossStart">สู้กับบอส!</button>
+    </div>
+    <div class="quiz-box" id="bossPlay" hidden>
+      <div class="quiz-meta">
+        <span class="timer" id="bossTimer">60</span>
+        <span id="bossStreak" class="streak"></span>
+        <span id="bossScore">0 pt</span>
+      </div>
+      <div class="quiz-word" id="bossWord">?</div>
+      <div class="choices" id="bossChoices"></div>
+    </div>
+    <div class="quiz-box" id="bossEnd" hidden>
+      <div class="quiz-emoji">🏆</div>
+      <div class="result" id="bossResult"></div>
+      <div class="rank" id="bossRank"></div>
+      <button class="big-btn" id="btnBossAgain">แก้มือ!</button>
+    </div>
+  </section>
+</main>
+
+<div class="voice-row">
+  <label for="voiceSel">🗣️ เสียงพูด:</label>
+  <select id="voiceSel"><option>กำลังโหลดเสียง...</option></select>
+</div>
+
+<p class="note">
+  ตัวอย่างสื่อการสอน Unit 0 (40 คำจากทั้งหมด 150 คำ) · โครงการ N5 一,〇〇〇語「にほんへの旅」<br>
+  ความคืบหน้าจะถูกบันทึกไว้ในเครื่องของคุณโดยอัตโนมัติ
+</p>
+
+<script>
+/* ================= 語彙データ (Unit 0 サンプル 40語) ================= */
+const WORDS = [
+  {jp:"コーヒー", r:"kōhī", th:"กาแฟ", e:"☕", trap:"เสียงยาว 2 ที่! ไม่ใช่ 'โคฟี่' แบบไทย"},
+  {jp:"テレビ", r:"terebi", th:"โทรทัศน์ / ทีวี", e:"📺", trap:"ย่อจาก television → 'เทเรบิ' ไม่ใช่ 'ทีวี'"},
+  {jp:"ホテル", r:"hoteru", th:"โรงแรม", e:"🏨"},
+  {jp:"タクシー", r:"takushī", th:"แท็กซี่", e:"🚕", trap:"'ทาคุชี่' ลากเสียงท้ายยาว ต่างจาก แท็กซี่"},
+  {jp:"コンビニ", r:"konbini", th:"ร้านสะดวกซื้อ", e:"🏪", trap:"ย่อจาก convenience store"},
+  {jp:"パソコン", r:"pasokon", th:"คอมพิวเตอร์", e:"💻", trap:"ย่อจาก personal computer ไม่ใช่ 'คอมฯ'"},
+  {jp:"レストラン", r:"resutoran", th:"ร้านอาหาร", e:"🍽️"},
+  {jp:"カメラ", r:"kamera", th:"กล้องถ่ายรูป", e:"📷"},
+  {jp:"バス", r:"basu", th:"รถบัส / รถเมล์", e:"🚌"},
+  {jp:"エレベーター", r:"erebētā", th:"ลิฟต์", e:"🛗", trap:"ไทยใช้ lift (อังกฤษ) ญี่ปุ่นใช้ elevator (อเมริกัน)"},
+  {jp:"デパート", r:"depāto", th:"ห้างสรรพสินค้า", e:"🏬", trap:"ย่อจาก department store"},
+  {jp:"スーパー", r:"sūpā", th:"ซูเปอร์มาร์เก็ต", e:"🛒"},
+  {jp:"プール", r:"pūru", th:"สระว่ายน้ำ", e:"🏊"},
+  {jp:"パン", r:"pan", th:"ขนมปัง", e:"🍞", trap:"มาจากภาษาโปรตุเกส pão ไม่ใช่ภาษาอังกฤษ!"},
+  {jp:"ジュース", r:"jūsu", th:"น้ำผลไม้", e:"🧃"},
+  {jp:"ペン", r:"pen", th:"ปากกา", e:"🖊️"},
+  {jp:"ノート", r:"nōto", th:"สมุด", e:"📓", trap:"ย่อจาก notebook = สมุด (ไม่ใช่โน้ตเพลง)"},
+  {jp:"ボールペン", r:"bōrupen", th:"ปากกาลูกลื่น", e:"🖊️"},
+  {jp:"スプーン", r:"supūn", th:"ช้อน", e:"🥄"},
+  {jp:"フォーク", r:"fōku", th:"ส้อม", e:"🍴"},
+  {jp:"ナイフ", r:"naifu", th:"มีด", e:"🔪"},
+  {jp:"コップ", r:"koppu", th:"แก้วน้ำ", e:"🥛", trap:"มาจากภาษาดัตช์ kop"},
+  {jp:"シャツ", r:"shatsu", th:"เสื้อเชิ้ต", e:"👔"},
+  {jp:"ネクタイ", r:"nekutai", th:"เนกไท", e:"👔"},
+  {jp:"スカート", r:"sukāto", th:"กระโปรง", e:"👗"},
+  {jp:"ズボン", r:"zubon", th:"กางเกง", e:"👖", trap:"มาจากภาษาฝรั่งเศส jupon"},
+  {jp:"コート", r:"kōto", th:"เสื้อโค้ท", e:"🧥"},
+  {jp:"テスト", r:"tesuto", th:"การสอบ", e:"📝"},
+  {jp:"クラス", r:"kurasu", th:"ชั้นเรียน", e:"🏫"},
+  {jp:"プレゼント", r:"purezento", th:"ของขวัญ", e:"🎁"},
+  {jp:"パーティー", r:"pātī", th:"งานเลี้ยง / ปาร์ตี้", e:"🎉"},
+  {jp:"ギター", r:"gitā", th:"กีตาร์", e:"🎸"},
+  {jp:"スポーツ", r:"supōtsu", th:"กีฬา", e:"⚽"},
+  {jp:"ドア", r:"doa", th:"ประตู", e:"🚪"},
+  {jp:"テーブル", r:"tēburu", th:"โต๊ะ", e:"🪑"},
+  {jp:"ベッド", r:"beddo", th:"เตียง", e:"🛏️"},
+  {jp:"トイレ", r:"toire", th:"ห้องน้ำ", e:"🚻"},
+  {jp:"アパート", r:"apāto", th:"อพาร์ตเมนต์", e:"🏢", trap:"ย่อจาก apartment"},
+  {jp:"ラジオ", r:"rajio", th:"วิทยุ", e:"📻"},
+  {jp:"ニュース", r:"nyūsu", th:"ข่าว", e:"📰"}
+];
+const N = WORDS.length;
+
+/* 進捗: 0=まだ, 1=★(自己申告), 2=★★(クイズ正解) */
+const mastery = new Array(N).fill(0);
+/* 端末に進捗を保存(非対応環境では無視される) */
+function saveProgress(){ try{ localStorage.setItem("n5tabi_u0", JSON.stringify(mastery)); }catch(e){} }
+function loadProgress(){
+  try{
+    const d = JSON.parse(localStorage.getItem("n5tabi_u0") || "null");
+    if(Array.isArray(d) && d.length === N) d.forEach((v,i)=> mastery[i] = v);
+  }catch(e){}
+}
+
+/* ================= 共通 ================= */
+const $ = id => document.getElementById(id);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+
+/* ===== 音声システム =====
+   1) audio/u0_XX.mp3(または .wav)が存在すればそれを再生(アクセント保証)
+   2) なければ端末TTSにフォールバック(品質の高い日本語音声を優先選択) */
+const UNIT = "u0";
+const ttsOf = w => w.jp;
+
+let jaVoices = [], chosenVoice = null;
+function rankVoice(v){
+  const PRI = ["Google 日本語","Nanami","Keita","Sayaka","Kyoko","O-Ren","Otoya"];
+  const i = PRI.findIndex(p => v.name.includes(p));
+  return i < 0 ? 99 : i;
+}
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  jaVoices = speechSynthesis.getVoices()
+    .filter(v => v.lang && v.lang.toLowerCase().startsWith("ja"))
+    .sort((a,b) => rankVoice(a)-rankVoice(b));
+  const sel = $("voiceSel");
+  sel.innerHTML = "";
+  if(jaVoices.length === 0){
+    sel.innerHTML = "<option>ไม่พบเสียงภาษาญี่ปุ่นในเครื่องนี้</option>";
+    chosenVoice = null; return;
+  }
+  jaVoices.forEach((v,i)=>{
+    const o = document.createElement("option");
+    o.value = i; o.textContent = v.name;
+    sel.appendChild(o);
+  });
+  chosenVoice = jaVoices[0];
+  sel.value = 0;
+  sel.onchange = ()=>{ chosenVoice = jaVoices[sel.value]; speak("こんにちは"); };
+}
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = loadVoices;
+
+function speak(text){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(chosenVoice) u.voice = chosenVoice;
+    u.lang = "ja-JP"; u.rate = 0.9;
+    speechSynthesis.speak(u);
+  }catch(e){/* TTS未対応環境では無音でスキップ */}
+}
+/* 録音ファイル優先再生: audio/u0_00.mp3 → .wav → TTS の順に試す */
+function tryPlay(srcs, fallback){
+  if(srcs.length === 0){ fallback(); return; }
+  const a = new Audio(srcs[0]);
+  let failed = false;
+  const next = ()=>{ if(!failed){ failed = true; tryPlay(srcs.slice(1), fallback); } };
+  a.onerror = next;
+  a.play().catch(next);
+}
+function playWord(i){
+  const base = "audio/" + UNIT + "_" + String(i).padStart(2,"0");
+  tryPlay([base+".mp3", base+".wav"], ()=> speak(ttsOf(WORDS[i])));
+}
+
+function updateProgress(){
+  const done = mastery.filter(m=>m>=2).length;
+  $("progressText").textContent = `${done} / ${N} คำ`;
+  const pct = done/N*100;
+  $("progressFill").style.width = pct+"%";
+  $("trainMarker").style.left = `calc(6px + ${pct/100} * (100% - 12px))`;
+  saveProgress();
+}
+
+/* ================= タブ切替 ================= */
+const tabs = {tabCards:"secCards", tabQuiz:"secQuiz", tabBoss:"secBoss"};
+Object.keys(tabs).forEach(id=>{
+  $(id).addEventListener("click", ()=>{
+    Object.keys(tabs).forEach(t=>{
+      $(t).classList.toggle("active", t===id);
+      $(t).setAttribute("aria-selected", t===id);
+      document.getElementById(tabs[t]).classList.toggle("show", t===id);
+    });
+  });
+});
+
+/* ================= フラッシュカード ================= */
+let fcOrder = shuffle([...WORDS.keys()]);
+let fcIdx = 0;
+const flashcard = $("flashcard");
+
+function renderCard(){
+  const w = WORDS[fcOrder[fcIdx]];
+  flashcard.classList.remove("flipped");
+  $("fcEmoji").textContent = w.e;
+  $("fcWord").textContent = w.jp;
+  $("fcThai").textContent = w.th;
+  $("fcRomaji").textContent = w.r;
+  const trap = $("fcTrap");
+  if(w.trap){trap.hidden=false; trap.textContent = "⚠️ "+w.trap;}
+  else trap.hidden = true;
+  const known = mastery.filter(m=>m>=1).length;
+  $("fcCount").innerHTML =
+    `การ์ดที่ ${fcIdx+1}/${N} · <span class="star">★</span> รู้แล้ว ${known} คำ`;
+}
+flashcard.addEventListener("click", ()=> flashcard.classList.toggle("flipped"));
+$("fcSpeak").addEventListener("click", e=>{
+  e.stopPropagation();
+  playWord(fcOrder[fcIdx]);
+});
+function nextCard(){
+  fcIdx++;
+  if(fcIdx>=N){ fcOrder = shuffle([...WORDS.keys()]); fcIdx = 0; }
+  renderCard();
+}
+$("btnKnown").addEventListener("click", ()=>{
+  const i = fcOrder[fcIdx];
+  if(mastery[i]<1) mastery[i]=1; saveProgress();
+  nextCard();
+});
+$("btnUnknown").addEventListener("click", nextCard);
+
+/* ================= 4択問題生成(共通) ================= */
+function makeQuestion(){
+  const qi = Math.floor(Math.random()*N);
+  const wrongs = shuffle([...WORDS.keys()].filter(i=>i!==qi)).slice(0,3);
+  return {qi, options: shuffle([qi, ...wrongs])};
+}
+
+/* ================= クイズ ★★ ================= */
+let quizQs=[], quizNo=0, quizScore=0, quizLock=false;
+
+$("btnQuizStart").addEventListener("click", startQuiz);
+$("btnQuizAgain").addEventListener("click", startQuiz);
+
+function startQuiz(){
+  quizQs = Array.from({length:10}, makeQuestion);
+  quizNo = 0; quizScore = 0;
+  $("quizStart").hidden = true; $("quizEnd").hidden = true;
+  $("quizPlay").hidden = false;
+  showQuizQ();
+}
+function showQuizQ(){
+  quizLock = false;
+  const {qi, options} = quizQs[quizNo];
+  const w = WORDS[qi];
+  $("quizNo").textContent = `ข้อ ${quizNo+1}/10`;
+  $("quizScore").textContent = `คะแนน ${quizScore}`;
+  $("quizWord").textContent = w.jp;
+  playWord(qi);
+  const box = $("quizChoices"); box.innerHTML = "";
+  options.forEach(oi=>{
+    const b = document.createElement("button");
+    b.className = "choice"; b.textContent = WORDS[oi].th;
+    b.addEventListener("click", ()=>answerQuiz(b, oi, qi));
+    box.appendChild(b);
+  });
+}
+$("quizSpeak").addEventListener("click", ()=> playWord(quizQs[quizNo].qi));
+function answerQuiz(btn, oi, qi){
+  if(quizLock) return; quizLock = true;
+  const ok = oi===qi;
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok){
+    [...$("quizChoices").children].forEach(c=>{
+      if(c.textContent===WORDS[qi].th) c.classList.add("correct");
+    });
+  } else {
+    quizScore++;
+    mastery[qi] = 2;         // ★★ 獲得
+    updateProgress();
+  }
+  setTimeout(()=>{
+    quizNo++;
+    if(quizNo<10) showQuizQ();
+    else endQuiz();
+  }, 900);
+}
+function endQuiz(){
+  $("quizPlay").hidden = true; $("quizEnd").hidden = false;
+  const msg = quizScore>=9 ? "สุดยอด! เก่งมาก 🌟"
+           : quizScore>=6 ? "ดีมาก! อีกนิดเดียว 💪"
+           : "ไม่เป็นไร ลองทบทวนการ์ดแล้วมาใหม่นะ 📇";
+  $("quizResult").innerHTML = `ตอบถูก <b>${quizScore}/10</b> ข้อ<br>${msg}`;
+}
+
+/* ================= ボス戦 ================= */
+let bossTime=60, bossScore=0, bossStreak=0, bossTimerId=null, bossLock=false, bossQ=null;
+
+$("btnBossStart").addEventListener("click", startBoss);
+$("btnBossAgain").addEventListener("click", startBoss);
+
+function startBoss(){
+  bossTime = 60; bossScore = 0; bossStreak = 0;
+  $("bossStart").hidden = true; $("bossEnd").hidden = true;
+  $("bossPlay").hidden = false;
+  clearInterval(bossTimerId);
+  bossTimerId = setInterval(()=>{
+    bossTime--;
+    $("bossTimer").textContent = bossTime;
+    if(bossTime<=0) endBoss();
+  }, 1000);
+  showBossQ();
+}
+function showBossQ(){
+  bossLock = false;
+  bossQ = makeQuestion();
+  const w = WORDS[bossQ.qi];
+  $("bossTimer").textContent = bossTime;
+  $("bossScore").textContent = bossScore+" pt";
+  $("bossStreak").textContent = bossStreak>=2 ? `🔥x${bossStreak}` : "";
+  $("bossWord").textContent = w.jp;
+  const box = $("bossChoices"); box.innerHTML = "";
+  bossQ.options.forEach(oi=>{
+    const b = document.createElement("button");
+    b.className = "choice"; b.textContent = WORDS[oi].th;
+    b.addEventListener("click", ()=>answerBoss(b, oi));
+    box.appendChild(b);
+  });
+}
+function answerBoss(btn, oi){
+  if(bossLock) return; bossLock = true;
+  const ok = oi===bossQ.qi;
+  btn.classList.add(ok?"correct":"wrong");
+  if(ok){
+    bossStreak++;
+    bossScore += 10 + Math.min(bossStreak-1,5)*2;  // 連続ボーナス
+    if(mastery[bossQ.qi]<2){ mastery[bossQ.qi]=2; updateProgress(); }
+  } else {
+    bossStreak = 0;
+  }
+  setTimeout(showBossQ, ok?350:700);
+}
+function endBoss(){
+  clearInterval(bossTimerId);
+  $("bossPlay").hidden = true; $("bossEnd").hidden = false;
+  const rank = bossScore>=250 ? "🚄 ชินคันเซ็นมาสเตอร์"
+            : bossScore>=170 ? "🧑‍✈️ นายสถานี (駅長)"
+            : bossScore>=90  ? "🎫 พนักงานรถไฟ (車掌)"
+            : "🌱 นักเดินทางฝึกหัด";
+  $("bossResult").innerHTML = `คะแนนรวม <b>${bossScore} pt</b>`;
+  $("bossRank").textContent = rank;
+}
+
+/* ================= 初期化 ================= */
+loadVoices();
+loadProgress();
+renderCard();
+updateProgress();
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>

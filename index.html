@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A6E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>にほんへの旅 | N5 一,〇〇〇語</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1E3A6E; --green:#00A063; --red:#E7222E; --yellow:#FFC81E;
+    --bg:#EEF3F8; --ink:#1B2430; --sub:#5B6B80; --white:#FFFFFF;
+    --radius:16px;
+    --jp:'M PLUS Rounded 1c','Noto Sans JP',sans-serif;
+    --th:'Noto Sans Thai','M PLUS Rounded 1c',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);background:var(--bg);color:var(--ink);
+    min-height:100vh;padding:16px 12px 48px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  a{color:inherit}
+
+  /* ===== 駅名標ヘッダー ===== */
+  .station-sign{
+    width:100%;max-width:640px;background:var(--white);
+    border-radius:var(--radius);box-shadow:0 4px 0 rgba(30,58,110,.15);
+    overflow:hidden;border:3px solid var(--navy);
+  }
+  .sign-main{text-align:center;padding:18px 16px 10px}
+  .sign-main .kana{font-family:var(--jp);font-weight:800;font-size:clamp(26px,7vw,40px);color:var(--navy);letter-spacing:.04em}
+  .sign-main .romaji{font-family:var(--jp);font-weight:700;text-transform:uppercase;letter-spacing:.25em;font-size:12px;color:var(--sub);margin-top:2px}
+  .sign-line{display:flex;align-items:center;gap:8px;padding:8px 14px 14px}
+  .sign-line .prev,.sign-line .next{font-size:12px;color:var(--sub);white-space:nowrap;font-weight:600}
+  .sign-line .track{flex:1;height:14px;border-radius:7px;background:var(--green);position:relative}
+  .sign-line .track::before,.sign-line .track::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:10px;height:10px;border-radius:50%;background:var(--white);
+  }
+  .sign-line .track::before{left:6px}
+  .sign-line .track::after{right:6px}
+  #trainMarker{position:absolute;top:50%;left:6px;transform:translate(-50%,-58%);font-size:22px;transition:left .6s ease}
+
+  .platform{
+    width:100%;max-width:640px;margin-top:12px;background:var(--white);
+    border-radius:var(--radius);padding:12px 16px;box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .platform .label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
+  .platform .bar{height:12px;background:#E3E9F1;border-radius:6px;overflow:hidden}
+  .platform .fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,var(--yellow),var(--yellow) 10px,#E8AE00 10px,#E8AE00 20px);transition:width .5s ease}
+
+  /* ===== 路線図 ===== */
+  .route{width:100%;max-width:640px;margin-top:6px;position:relative;padding-left:38px}
+  .route::before{
+    content:"";position:absolute;left:16px;top:20px;bottom:20px;width:8px;
+    border-radius:4px;background:var(--green);
+  }
+  .region{
+    font-size:13px;font-weight:800;color:var(--sub);
+    margin:20px 0 10px;position:relative;letter-spacing:.02em;
+  }
+  .region::before{
+    content:"";position:absolute;left:-29px;top:50%;transform:translateY(-50%);
+    width:18px;height:18px;border-radius:4px;background:var(--navy);
+    border:3px solid var(--white);box-shadow:0 0 0 2px var(--navy);
+  }
+  .st{
+    position:relative;background:var(--white);border-radius:14px;
+    padding:12px 14px;margin-bottom:10px;
+    box-shadow:0 3px 0 rgba(30,58,110,.12);
+    display:flex;gap:12px;align-items:center;text-decoration:none;
+    transition:transform .08s;
+  }
+  a.st:active{transform:translateY(2px)}
+  .st::before{
+    content:"";position:absolute;left:-29px;top:50%;transform:translate(0,-50%);
+    width:12px;height:12px;border-radius:50%;
+    background:var(--white);border:4px solid var(--green);
+  }
+  .st.locked{opacity:.55}
+  .st.locked::before{border-color:#B9C4D2}
+  .st.done::before{background:var(--green)}
+  .st .emoji{font-size:28px}
+  .st .names{flex:1;min-width:0}
+  .st .jp{font-family:var(--jp);font-weight:800;color:var(--navy);font-size:16px}
+  .st .th{font-size:12.5px;color:var(--sub);font-weight:600;margin-top:1px}
+  .st .meta{text-align:right;font-size:12px;font-weight:700;color:var(--sub);flex-shrink:0}
+  .st .meta .pct{color:var(--navy)}
+  .st .meta .done-badge{color:var(--green)}
+  .mini{width:76px;height:8px;background:#E3E9F1;border-radius:4px;overflow:hidden;margin-top:5px}
+  .mini>div{height:100%;background:var(--yellow)}
+  .goal .jp{color:var(--red)}
+  .note{font-size:12px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header class="station-sign" role="banner">
+  <div class="sign-main">
+    <div class="kana">にほんへの旅</div>
+    <div class="romaji">N5 Vocabulary · 1,000 Words</div>
+  </div>
+  <div class="sign-line" aria-hidden="true">
+    <span class="prev">🇹🇭 กรุงเทพฯ<br>Bangkok</span>
+    <span class="track"><span id="trainMarker">🚆</span></span>
+    <span class="next">ปราสาทโอซาก้า 🏯<br>GOAL</span>
+  </div>
+</header>
+
+<div class="platform">
+  <div class="label">
+    <span>คำที่ฟังเข้าใจแล้ว ★★ (ยูนิตที่เปิดแล้ว)</span>
+    <span id="progressText">0 / 110 คำ</span>
+  </div>
+  <div class="bar"><div class="fill" id="progressFill"></div></div>
+</div>
+
+<nav class="route" id="route" aria-label="แผนที่การเดินทาง"></nav>
+
+<p class="note">
+  โครงการคำศัพท์ N5 一,〇〇〇語「にほんへの旅」<br>
+  ความคืบหน้าจะถูกบันทึกไว้ในเครื่องของคุณโดยอัตโนมัติ · เพิ่มหน้านี้ลงหน้าจอโฮมเพื่อใช้แบบแอป 📲
+</p>
+
+<script>
+/* ===== ユニット定義(open:trueのものだけ入場可) ===== */
+const UNITS = [
+  {id:0,  e:"✈️", jp:"カタカナごブースト", th:"คำคาตาคานะ 150 คำ (ตัวอย่าง 40)", words:40, file:"unit0.html", key:"n5tabi_u0", open:true},
+  {id:1,  e:"🔢", jp:"すうじとじかん",     th:"ตัวเลข・เวลา・ปฏิทิน",            words:70, file:"unit1.html", key:"n5tabi_u1", open:true},
+  {id:2,  e:"🏫", jp:"がっこう",           th:"ชีวิตในโรงเรียน",                words:50},
+  {id:3,  e:"🍜", jp:"たべもの",           th:"อาหารและเครื่องดื่ม",             words:55},
+  {id:4,  e:"🏠", jp:"いえとかぞく",       th:"บ้านและครอบครัว",                words:50},
+  {id:5,  e:"⏰", jp:"わたしのいちにち",   th:"กิจวัตรประจำวัน (กริยา I)",       words:50},
+  {id:6,  e:"🛍️", jp:"かいもの",           th:"ช้อปปิ้งและเงิน",                 words:45},
+  {id:7,  e:"👕", jp:"もちものとふく",     th:"ของใช้และเสื้อผ้า",               words:45},
+  {id:8,  e:"🗺️", jp:"まちとばしょ",       th:"เมืองและสถานที่",                 words:50},
+  {id:9,  e:"🚄", jp:"こうつう・りょこう", th:"การเดินทางท่องเที่ยว",            words:50},
+  {id:10, e:"☀️", jp:"てんきときせつ",     th:"อากาศและฤดูกาล",                 words:40},
+  {id:11, e:"💪", jp:"からだとけんこう",   th:"ร่างกายและสุขภาพ",               words:45},
+  {id:12, e:"⚽", jp:"しゅみ",             th:"งานอดิเรก・กีฬา・ดนตรี",          words:45},
+  {id:13, e:"😊", jp:"きもちとけいようし", th:"ความรู้สึกและคำคุณศัพท์",         words:55},
+  {id:14, e:"🔧", jp:"どうしパワーアップ", th:"กริยา II",                        words:55},
+  {id:15, e:"🧭", jp:"いち・ほうこう",     th:"ตำแหน่ง・ทิศทาง・こそあど",       words:40},
+  {id:16, e:"🔢", jp:"じょすうし",         th:"ลักษณนามและการนับ",              words:30},
+  {id:17, e:"🙏", jp:"あいさつ",           th:"คำทักทายและวลีสำเร็จรูป",         words:40},
+  {id:18, e:"🧩", jp:"つなぎことば",       th:"คำนามธรรมและคำเชื่อม",            words:55},
+  {id:19, e:"🏯", jp:"ボスラッシュ",       th:"ทบทวนใหญ่・สอบจบ 1,000 คำ",       words:0, goal:true}
+];
+/* 地域見出し(ユニットidの直前に表示) */
+const REGIONS = {
+  0:"🛫 ดอนเมือง → สนามบินนาริตะ",
+  2:"🗼 โตเกียว Tokyo",
+  8:"🗻 โยโกฮาม่า・ภูเขาไฟฟูจิ",
+  11:"🏙️ นาโกย่า Nagoya",
+  13:"⛩️ เกียวโต Kyoto",
+  16:"🎡 โอซาก้า Osaka",
+  19:"🏯 ปราสาทโอซาก้า — เส้นชัย!"
+};
+
+const $ = id => document.getElementById(id);
+
+function unitDone(u){
+  if(!u.key) return 0;
+  try{
+    const d = JSON.parse(localStorage.getItem(u.key) || "null");
+    if(Array.isArray(d)) return d.filter(v=>v>=2).length;
+  }catch(e){}
+  return 0;
+}
+
+function build(){
+  const route = $("route");
+  route.innerHTML = "";
+  let totalDone = 0, totalOpen = 0;
+
+  UNITS.forEach(u=>{
+    if(REGIONS[u.id] !== undefined){
+      const h = document.createElement("div");
+      h.className = "region"; h.textContent = REGIONS[u.id];
+      route.appendChild(h);
+    }
+    const done = unitDone(u);
+    const isDone = u.open && u.words > 0 && done >= u.words;
+    if(u.open){ totalDone += done; totalOpen += u.words; }
+
+    const el = document.createElement(u.open ? "a" : "div");
+    el.className = "st" + (u.open ? "" : " locked") + (isDone ? " done" : "") + (u.goal ? " goal" : "");
+    if(u.open) el.href = u.file;
+
+    let meta;
+    if(u.goal){
+      meta = `<div class="meta">🔒 รอทุกยูนิต<br>เปิดครบก่อน</div>`;
+    }else if(u.open){
+      const pct = u.words ? Math.round(done/u.words*100) : 0;
+      meta = isDone
+        ? `<div class="meta"><span class="done-badge">✅ สแตมป์แล้ว!</span><br>${done}/${u.words} คำ</div>`
+        : `<div class="meta"><span class="pct">${pct}%</span> · ${done}/${u.words} คำ<div class="mini"><div style="width:${pct}%"></div></div></div>`;
+    }else{
+      meta = `<div class="meta">🔒 เร็วๆ นี้<br>${u.words} คำ</div>`;
+    }
+    el.innerHTML = `
+      <span class="emoji">${u.e}</span>
+      <span class="names">
+        <div class="jp">Unit ${u.id} · ${u.jp}</div>
+        <div class="th">${u.th}</div>
+      </span>
+      ${meta}`;
+    route.appendChild(el);
+  });
+
+  $("progressText").textContent = `${totalDone} / ${totalOpen} คำ`;
+  const pct = totalOpen ? totalDone/totalOpen*100 : 0;
+  $("progressFill").style.width = pct+"%";
+  $("trainMarker").style.left = `calc(6px + ${pct/100} * (100% - 12px))`;
+}
+
+build();
+/* ユニットから戻ってきた時に進捗を再反映 */
+window.addEventListener("pageshow", build);
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>
