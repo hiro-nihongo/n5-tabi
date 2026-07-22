@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A6E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Unit 2 がっこう | にほんへの旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  @font-face{font-family:'KleeOne';src:url('fonts/KleeOne-Regular.woff2') format('woff2');font-display:swap;}
+  :root{
+    --navy:#1E3A6E; --green:#00A063; --red:#E7222E; --yellow:#FFC81E;
+    --bg:#EEF3F8; --ink:#1B2430; --sub:#5B6B80; --white:#FFFFFF;
+    --radius:16px;
+    --jp:'KleeOne','M PLUS Rounded 1c','Noto Sans JP',sans-serif;
+    --th:'Noto Sans Thai','M PLUS Rounded 1c',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);background:var(--bg);color:var(--ink);
+    min-height:100vh;padding:16px 12px 48px;
+    display:flex;flex-direction:column;align-items:center;
+  }
+  button{font-family:inherit;cursor:pointer;border:none}
+  button:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+
+  .back-link{width:100%;max-width:640px;font-size:14px;font-weight:700;color:var(--navy);text-decoration:none;margin-bottom:8px;display:block}
+
+  .station-sign{
+    width:100%;max-width:640px;background:var(--white);
+    border-radius:var(--radius);box-shadow:0 4px 0 rgba(30,58,110,.15);
+    overflow:hidden;border:3px solid var(--navy);
+  }
+  .sign-main{text-align:center;padding:18px 16px 10px}
+  .sign-main .kana{font-family:var(--jp);font-weight:800;font-size:clamp(26px,7vw,40px);color:var(--navy);letter-spacing:.04em}
+  .sign-main .romaji{font-family:var(--jp);font-weight:700;text-transform:uppercase;letter-spacing:.25em;font-size:12px;color:var(--sub);margin-top:2px}
+  .sign-line{display:flex;align-items:center;gap:8px;padding:8px 14px 14px}
+  .sign-line .prev,.sign-line .next{font-size:12px;color:var(--sub);white-space:nowrap;font-weight:600}
+  .sign-line .track{flex:1;height:14px;border-radius:7px;background:var(--green);position:relative}
+  .sign-line .track::before,.sign-line .track::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:10px;height:10px;border-radius:50%;background:var(--white);
+  }
+  .sign-line .track::before{left:6px}
+  .sign-line .track::after{right:6px}
+  #trainMarker{position:absolute;top:50%;left:6px;transform:translate(-50%,-58%);font-size:22px;transition:left .6s ease}
+
+  .platform{
+    width:100%;max-width:640px;margin-top:12px;background:var(--white);
+    border-radius:var(--radius);padding:12px 16px;box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .platform .label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--sub);margin-bottom:6px}
+  .platform .bar{height:12px;background:#E3E9F1;border-radius:6px;overflow:hidden}
+  .platform .fill{height:100%;width:0%;background:repeating-linear-gradient(45deg,var(--yellow),var(--yellow) 10px,#E8AE00 10px,#E8AE00 20px);transition:width .5s ease}
+
+  .tabs{width:100%;max-width:640px;display:flex;gap:6px;margin-top:14px}
+  .tab{
+    flex:1;padding:11px 2px;border-radius:12px;font-weight:700;font-size:13px;
+    background:var(--white);color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);transition:transform .1s;
+  }
+  .tab:active{transform:translateY(2px)}
+  .tab.active{background:var(--navy);color:var(--white)}
+
+  main{width:100%;max-width:640px;margin-top:14px}
+  section{display:none}
+  section.show{display:block;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+  .chip{
+    padding:7px 14px;border-radius:999px;font-size:13px;font-weight:700;
+    background:var(--white);color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .chip.active{background:var(--green);color:var(--white)}
+  .chant-bar{text-align:center;margin-bottom:12px}
+  .chant-btn{
+    background:var(--yellow);color:#5C4300;font-weight:800;font-size:14px;
+    padding:9px 18px;border-radius:999px;box-shadow:0 3px 0 #C99A00;
+  }
+
+  .card-stage{perspective:1200px;display:flex;justify-content:center}
+  .flashcard{
+    width:100%;max-width:420px;height:300px;position:relative;
+    transform-style:preserve-3d;transition:transform .45s;cursor:pointer;background:none;
+  }
+  .flashcard.flipped{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    background:var(--white);border-radius:20px;box-shadow:0 6px 0 rgba(30,58,110,.15);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;border:3px solid var(--navy);
+  }
+  .face.back{transform:rotateY(180deg);border-color:var(--green)}
+  .face .emoji{font-size:50px}
+  .face .word{font-family:var(--jp);font-weight:800;font-size:36px;color:var(--navy);margin-top:4px}
+  .face .kanji{font-family:var(--jp);font-size:17px;color:var(--sub);margin-top:2px}
+  .face .hint{font-size:13px;color:var(--sub);margin-top:10px}
+  .face .thai{font-size:28px;font-weight:700;color:var(--green);text-align:center}
+  .face .trap{
+    margin-top:12px;font-size:13px;background:#FFF6DC;border:2px dashed var(--yellow);
+    border-radius:10px;padding:8px 12px;color:#7A5A00;max-width:100%;
+  }
+  .speak-btn{
+    margin-top:12px;background:var(--navy);color:var(--white);
+    border-radius:999px;padding:8px 18px;font-size:14px;font-weight:700;display:inline-block;
+  }
+  .fc-controls{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  .fc-btn{padding:12px 20px;border-radius:12px;font-weight:700;font-size:15px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+  .fc-btn.unknown{background:var(--white);color:var(--sub)}
+  .fc-btn.known{background:var(--green);color:var(--white)}
+  .fc-count{text-align:center;margin-top:10px;font-size:13px;color:var(--sub)}
+  .star{color:#E8AE00}
+
+  .quiz-box{
+    background:var(--white);border-radius:20px;border:3px solid var(--navy);
+    box-shadow:0 6px 0 rgba(30,58,110,.15);padding:22px 18px;text-align:center;
+  }
+  .quiz-word{font-family:var(--jp);font-weight:800;font-size:34px;color:var(--navy)}
+  .quiz-emoji{font-size:44px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+  .choice{
+    padding:14px 8px;border-radius:12px;background:#F0F4FA;font-size:16px;font-weight:600;
+    border:2px solid transparent;transition:transform .08s;
+  }
+  .choice:active{transform:scale(.97)}
+  .choice.correct{background:#DFF7EC;border-color:var(--green);color:#00693F}
+  .choice.wrong{background:#FDE3E5;border-color:var(--red);color:#9B1720}
+  .quiz-meta{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--sub);margin-bottom:12px}
+  .big-btn{
+    display:block;width:100%;margin-top:16px;padding:14px;border-radius:14px;
+    background:var(--red);color:var(--white);font-size:17px;font-weight:800;box-shadow:0 4px 0 #A5121C;
+  }
+  .big-btn.green{background:var(--green);box-shadow:0 4px 0 #006B42}
+  .big-btn.navy{background:var(--navy);box-shadow:0 4px 0 #12244A}
+  .result{font-size:17px;line-height:1.7;margin-top:10px}
+  .rank{font-family:var(--jp);font-size:24px;font-weight:800;color:var(--navy);margin-top:8px}
+  .timer{font-family:var(--jp);font-weight:800;font-size:22px;color:var(--red)}
+  .streak{color:#E8AE00;font-weight:800}
+  .note{font-size:12px;color:var(--sub);text-align:center;margin-top:20px;line-height:1.6}
+
+  /* ===== かるた ===== */
+  .karuta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .kcard{
+    background:#F0F4FA;border-radius:12px;padding:12px 6px;text-align:center;
+    border:2px solid transparent;cursor:pointer;transition:transform .08s;
+  }
+  .kcard:active{transform:scale(.96)}
+  .kcard .ke{font-size:28px}
+  .kcard .kt{font-size:12.5px;font-weight:600;margin-top:4px}
+  .kcard.correct{background:#DFF7EC;border-color:var(--green)}
+  .kcard.wrong{background:#FDE3E5;border-color:var(--red)}
+
+  /* ===== ペアあわせ ===== */
+  .match-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+  .mcard{
+    min-height:64px;display:flex;align-items:center;justify-content:center;text-align:center;
+    background:#F0F4FA;border-radius:12px;font-weight:700;padding:6px;
+    border:2px solid transparent;cursor:pointer;font-size:14px;transition:transform .08s;
+  }
+  .mcard:active{transform:scale(.96)}
+  .mcard.jpside{font-family:var(--jp);font-size:17px;color:var(--navy)}
+  .mcard.sel{border-color:var(--navy);background:#E7EEF9}
+  .mcard.matched{background:#DFF7EC;border-color:var(--green);color:#00693F;pointer-events:none}
+  .mcard.miss{background:#FDE3E5;border-color:var(--red)}
+
+  .voice-row{
+    width:100%;max-width:640px;margin-top:16px;background:var(--white);
+    border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;
+    font-size:13px;font-weight:600;color:var(--sub);box-shadow:0 2px 0 rgba(30,58,110,.08);
+  }
+  .voice-row select{flex:1;font-family:inherit;font-size:13px;padding:6px;border-radius:8px;border:2px solid #DDE5EF;background:#F7FAFD}
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">◀ กลับไปที่แผนที่การเดินทาง</a>
+
+<header class="station-sign" role="banner">
+  <div class="sign-main">
+    <div class="kana">がっこう</div>
+    <div class="romaji">Unit 2 · Gakkō</div>
+  </div>
+  <div class="sign-line" aria-hidden="true">
+    <span class="prev">◀ นาริตะ<br>Narita</span>
+    <span class="track"><span id="trainMarker">🚆</span></span>
+    <span class="next">ยะไตโยโกโช ▶<br>Yatai Yokocho</span>
+  </div>
+</header>
+
+<div class="platform">
+  <div class="label">
+    <span>ความคืบหน้า (★★ ฟังเข้าใจแล้ว)</span>
+    <span id="progressText">0 / 50 คำ</span>
+  </div>
+  <div class="bar"><div class="fill" id="progressFill"></div></div>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" id="tabCards" role="tab" aria-selected="true">📇 การ์ด</button>
+  <button class="tab" id="tabQuiz" role="tab" aria-selected="false">🎧 ควิซ</button>
+  <button class="tab" id="tabMatch" role="tab" aria-selected="false">🀄 จับคู่</button>
+  <button class="tab" id="tabBoss" role="tab" aria-selected="false">👑 คารุตะ</button>
+</nav>
+
+<main>
+  <!-- ===== フラッシュカード ===== -->
+  <section id="secCards" class="show">
+    <div class="chips" id="chipBar"></div>
+    <div class="chant-bar"><button class="chant-btn" id="btnChant">🎵 เล่นชานท์หมวดนี้</button></div>
+    <div class="card-stage">
+      <button class="flashcard" id="flashcard" aria-label="พลิกการ์ด">
+        <div class="face front">
+          <div class="emoji" id="fcEmoji">🏫</div>
+          <div class="word" id="fcWord">がっこう</div>
+          <div class="kanji" id="fcKanji">学校</div>
+          <span class="speak-btn" id="fcSpeak">🔊 ฟังเสียง</span>
+          <div class="hint">แตะการ์ดเพื่อดูความหมาย</div>
+        </div>
+        <div class="face back">
+          <div class="thai" id="fcThai">โรงเรียน</div>
+          <div class="trap" id="fcTrap" hidden></div>
+          <div class="hint">แตะเพื่อกลับด้าน</div>
+        </div>
+      </button>
+    </div>
+    <div class="fc-controls">
+      <button class="fc-btn unknown" id="btnUnknown">🤔 ยังไม่แน่ใจ</button>
+      <button class="fc-btn known" id="btnKnown">✅ รู้แล้ว ★</button>
+    </div>
+    <div class="fc-count" id="fcCount"></div>
+  </section>
+
+  <!-- ===== 語彙クイズ ===== -->
+  <section id="secQuiz">
+    <div class="quiz-box" id="quizStart">
+      <div class="quiz-emoji">🎧</div>
+      <p style="margin-top:10px;font-weight:600">ฟังเสียง แล้วเลือกความหมายภาษาไทย<br>10 ข้อ · ตอบถูก = คำนั้นได้ ★★</p>
+      <button class="big-btn green" id="btnQuizStart">เริ่มควิซ!</button>
+    </div>
+    <div class="quiz-box" id="quizPlay" hidden>
+      <div class="quiz-meta"><span id="quizNo">ข้อ 1/10</span><span id="quizScore">คะแนน 0</span></div>
+      <div class="quiz-word" id="quizWord">?</div>
+      <div class="kanji" id="quizKanji" style="font-family:var(--jp);color:var(--sub)"></div>
+      <button class="speak-btn" id="quizSpeak">🔊 ฟังอีกครั้ง</button>
+      <div class="choices" id="quizChoices"></div>
+    </div>
+    <div class="quiz-box" id="quizEnd" hidden>
+      <div class="quiz-emoji">🎉</div>
+      <div class="result" id="quizResult"></div>
+      <button class="big-btn green" id="btnQuizAgain">เล่นอีกรอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== ペアあわせ(TPRの代替:読み→意味) ===== -->
+  <section id="secMatch">
+    <div class="quiz-box" id="matchStart">
+      <div class="quiz-emoji">🀄</div>
+      <p style="margin-top:10px;font-weight:600">จับคู่คำญี่ปุ่นกับความหมายไทย!<br>6 คู่ · จับคู่ถูกจะได้ยินเสียงอ่าน · คำที่จับคู่ได้จะได้ ★</p>
+      <button class="big-btn navy" id="btnMatchStart">เริ่มจับคู่!</button>
+    </div>
+    <div class="quiz-box" id="matchPlay" hidden>
+      <div class="quiz-meta"><span id="matchPairs">คู่ที่จับได้ 0/6</span><span id="matchMoves">แตะไป 0 ครั้ง</span></div>
+      <div class="match-grid" id="matchGrid"></div>
+    </div>
+    <div class="quiz-box" id="matchEnd" hidden>
+      <div class="quiz-emoji">🎊</div>
+      <div class="result" id="matchResult"></div>
+      <button class="big-btn navy" id="btnMatchAgain">เล่นอีกรอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== ボス:かるた大会 ===== -->
+  <section id="secBoss">
+    <div class="quiz-box" id="bossStart">
+      <div class="quiz-emoji">👑</div>
+      <p style="margin-top:10px;font-weight:600">บอสไฟต์: การแข่งขันคารุตะ 60 วินาที!<br>ฟังเสียง แล้วรีบตบการ์ดที่ถูกต้อง<br>ตอบถูกติดกันได้โบนัส 🔥</p>
+      <button class="big-btn" id="btnBossStart">เริ่มแข่งคารุตะ!</button>
+    </div>
+    <div class="quiz-box" id="bossPlay" hidden>
+      <div class="quiz-meta">
+        <span class="timer" id="bossTimer">60</span>
+        <span id="bossStreak" class="streak"></span>
+        <span id="bossScore">0 pt</span>
+      </div>
+      <button class="speak-btn" id="bossSpeak">🔊 ฟังอีกครั้ง</button>
+      <div class="karuta-grid" id="bossGrid"></div>
+    </div>
+    <div class="quiz-box" id="bossEnd" hidden>
+      <div class="quiz-emoji">🏆</div>
+      <div class="result" id="bossResult"></div>
+      <div class="rank" id="bossRank"></div>
+      <button class="big-btn" id="btnBossAgain">แก้มือ!</button>
+    </div>
+  </section>
+</main>
+
+<div class="voice-row">
+  <label for="voiceSel">🗣️ เสียงพูด:</label>
+  <select id="voiceSel"><option>กำลังโหลดเสียง...</option></select>
+</div>
+
+<p class="note">
+  สื่อการสอน Unit 2「がっこう」(50 คำ) · โครงการ N5 一,〇〇〇語「にほんへの旅」<br>
+  ความคืบหน้าจะถูกบันทึกไว้ในเครื่องของคุณโดยอัตโนมัติ
+</p>
+
+<script>
+/* ================= 語彙データ (Unit 2: 50語) =================
+   cat: place=สถานที่・คน, study=การเรียน, item=ของใช้, lang=ภาษา, verb=กริยา */
+const WORDS = [
+  // --- สถานที่・คน (9) ---
+  {k:"がっこう", kj:"学校", th:"โรงเรียน", e:"🏫", cat:"place"},
+  {k:"こうこう", kj:"高校", th:"โรงเรียนมัธยมปลาย", e:"🎒", cat:"place"},
+  {k:"だいがく", kj:"大学", th:"มหาวิทยาลัย", e:"🎓", cat:"place"},
+  {k:"きょうしつ", kj:"教室", th:"ห้องเรียน", e:"🚪", cat:"place"},
+  {k:"としょかん", kj:"図書館", th:"ห้องสมุด", e:"📚", cat:"place"},
+  {k:"せんせい", kj:"先生", th:"คุณครู / อาจารย์", e:"🧑‍🏫", cat:"place", trap:"เรียกครูว่า せんせい ห้ามเรียกชื่อเฉยๆ!"},
+  {k:"がくせい", kj:"学生", th:"นักศึกษา / นักเรียน", e:"🧑‍🎓", cat:"place"},
+  {k:"せいと", kj:"生徒", th:"นักเรียน (ประถม-มัธยม)", e:"🙋", cat:"place"},
+  {k:"ともだち", kj:"友達", th:"เพื่อน", e:"👫", cat:"place"},
+
+  // --- การเรียน (11) ---
+  {k:"じゅぎょう", kj:"授業", th:"คาบเรียน", e:"📖", cat:"study"},
+  {k:"べんきょう", kj:"勉強", th:"การเรียน", e:"📚", cat:"study"},
+  {k:"しゅくだい", kj:"宿題", th:"การบ้าน", e:"📝", cat:"study"},
+  {k:"しけん", kj:"試験", th:"การสอบ", e:"💯", cat:"study"},
+  {k:"しつもん", kj:"質問", th:"คำถาม", e:"❓", cat:"study"},
+  {k:"こたえ", kj:"答え", th:"คำตอบ", e:"✅", cat:"study"},
+  {k:"もんだい", kj:"問題", th:"โจทย์ / ปัญหา", e:"🧩", cat:"study"},
+  {k:"れんしゅう", kj:"練習", th:"การฝึกฝน", e:"💪", cat:"study"},
+  {k:"やすみ", kj:"休み", th:"วันหยุด / การพัก", e:"😴", cat:"study"},
+  {k:"ひるやすみ", kj:"昼休み", th:"พักกลางวัน", e:"🍱", cat:"study"},
+  {k:"なつやすみ", kj:"夏休み", th:"ปิดเทอมฤดูร้อน", e:"🏖️", cat:"study"},
+
+  // --- ของใช้ (11) ---
+  {k:"つくえ", kj:"机", th:"โต๊ะเรียน", e:"🪑", cat:"item"},
+  {k:"いす", kj:"椅子", th:"เก้าอี้", e:"💺", cat:"item"},
+  {k:"こくばん", kj:"黒板", th:"กระดานดำ", e:"⬛", cat:"item"},
+  {k:"かばん", kj:"鞄", th:"กระเป๋า", e:"🎒", cat:"item"},
+  {k:"ほん", kj:"本", th:"หนังสือ", e:"📖", cat:"item"},
+  {k:"じしょ", kj:"辞書", th:"พจนานุกรม", e:"📕", cat:"item"},
+  {k:"ざっし", kj:"雑誌", th:"นิตยสาร", e:"📰", cat:"item"},
+  {k:"しんぶん", kj:"新聞", th:"หนังสือพิมพ์", e:"🗞️", cat:"item"},
+  {k:"えんぴつ", kj:"鉛筆", th:"ดินสอ", e:"✏️", cat:"item"},
+  {k:"けしゴム", kj:"消しゴム", th:"ยางลบ", e:"🧽", cat:"item"},
+  {k:"かみ", kj:"紙", th:"กระดาษ", e:"📄", cat:"item", trap:"かみ มีหลายความหมาย: 紙=กระดาษ 髪=ผม 神=เทพเจ้า (อักเซนต์ต่างกัน)"},
+
+  // --- ภาษา (9) ---
+  {k:"にほんご", kj:"日本語", th:"ภาษาญี่ปุ่น", e:"🗾", cat:"lang"},
+  {k:"えいご", kj:"英語", th:"ภาษาอังกฤษ", e:"🔤", cat:"lang"},
+  {k:"タイご", kj:"タイ語", th:"ภาษาไทย", e:"🐘", cat:"lang"},
+  {k:"じ", kj:"字", th:"ตัวอักษร", e:"✍️", cat:"lang"},
+  {k:"ことば", kj:"言葉", th:"คำ / ภาษา", e:"💬", cat:"lang"},
+  {k:"いみ", kj:"意味", th:"ความหมาย", e:"💡", cat:"lang"},
+  {k:"かんじ", kj:"漢字", th:"อักษรคันจิ", e:"🈶", cat:"lang"},
+  {k:"ひらがな", kj:"平仮名", th:"อักษรฮิรางานะ", e:"🍡", cat:"lang"},
+  {k:"カタカナ", kj:"片仮名", th:"อักษรคาตาคานะ", e:"🍢", cat:"lang"},
+
+  // --- กริยา (10) ---
+  {k:"わかる", kj:"分かる", th:"เข้าใจ", e:"🧠", cat:"verb"},
+  {k:"おしえる", kj:"教える", th:"สอน / บอกให้รู้", e:"👩‍🏫", cat:"verb"},
+  {k:"ならう", kj:"習う", th:"เรียน (กับครู)", e:"🎓", cat:"verb", trap:"ならう = เรียนจากคนอื่น / べんきょう = เรียนเอง"},
+  {k:"おぼえる", kj:"覚える", th:"จำ / ท่องจำ", e:"🧠", cat:"verb"},
+  {k:"わすれる", kj:"忘れる", th:"ลืม", e:"💭", cat:"verb"},
+  {k:"よむ", kj:"読む", th:"อ่าน", e:"👀", cat:"verb"},
+  {k:"かく", kj:"書く", th:"เขียน", e:"✍️", cat:"verb"},
+  {k:"きく", kj:"聞く", th:"ฟัง / ถาม", e:"👂", cat:"verb", trap:"きく มี 2 ความหมาย: ฟัง และ ถาม"},
+  {k:"はなす", kj:"話す", th:"พูด / คุย", e:"🗣️", cat:"verb"},
+  {k:"いう", kj:"言う", th:"พูดว่า / บอก", e:"💬", cat:"verb"}
+];
+const N = WORDS.length;   // 50
+const CATS = [
+  {id:"all", label:"ทั้งหมด"},
+  {id:"place", label:"🏫 สถานที่・คน"},
+  {id:"study", label:"📚 การเรียน"},
+  {id:"item", label:"✏️ ของใช้"},
+  {id:"lang", label:"🔤 ภาษา"},
+  {id:"verb", label:"🗣️ กริยา"}
+];
+
+/* 進捗: 0=まだ, 1=★, 2=★★ */
+const mastery = new Array(N).fill(0);
+/* 端末に進捗を保存(非対応環境では無視される) */
+function saveProgress(){ try{ localStorage.setItem("n5tabi_u2", JSON.stringify(mastery)); }catch(e){} }
+function loadProgress(){
+  try{
+    const d = JSON.parse(localStorage.getItem("n5tabi_u2") || "null");
+    if(Array.isArray(d) && d.length === N) d.forEach((v,i)=> mastery[i] = v);
+  }catch(e){}
+}
+
+const $ = id => document.getElementById(id);
+const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
+
+/* ===== 音声システム =====
+   1) audio/u2_XX.mp3(または .wav)があればそれを再生(アクセント保証)
+   2) なければ端末TTSにフォールバック */
+const UNIT = "u2";
+
+let jaVoices = [], chosenVoice = null;
+function rankVoice(v){
+  const PRI = ["Google 日本語","Nanami","Keita","Sayaka","Kyoko","O-Ren","Otoya"];
+  const i = PRI.findIndex(p => v.name.includes(p));
+  return i < 0 ? 99 : i;
+}
+function loadVoices(){
+  if(!("speechSynthesis" in window)) return;
+  jaVoices = speechSynthesis.getVoices()
+    .filter(v => v.lang && v.lang.toLowerCase().startsWith("ja"))
+    .sort((a,b) => rankVoice(a)-rankVoice(b));
+  const sel = $("voiceSel");
+  sel.innerHTML = "";
+  if(jaVoices.length === 0){
+    sel.innerHTML = "<option>ไม่พบเสียงภาษาญี่ปุ่นในเครื่องนี้</option>";
+    chosenVoice = null; return;
+  }
+  jaVoices.forEach((v,i)=>{
+    const o = document.createElement("option");
+    o.value = i; o.textContent = v.name;
+    sel.appendChild(o);
+  });
+  chosenVoice = jaVoices[0];
+  sel.value = 0;
+  sel.onchange = ()=>{ chosenVoice = jaVoices[sel.value]; speak("こんにちは"); };
+}
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = loadVoices;
+
+function speak(text, rate=0.9){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if(chosenVoice) u.voice = chosenVoice;
+    u.lang = "ja-JP"; u.rate = rate;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+const ttsOf = w => (w.tts || w.k);
+function tryPlay(srcs, fallback){
+  if(srcs.length === 0){ fallback(); return; }
+  const a = new Audio(srcs[0]);
+  let failed = false;
+  const next = ()=>{ if(!failed){ failed = true; tryPlay(srcs.slice(1), fallback); } };
+  a.onerror = next;
+  a.play().catch(next);
+}
+function playWord(i){
+  const base = "audio/" + UNIT + "_" + String(i).padStart(2,"0");
+  tryPlay([base+".mp3", base+".wav"], ()=> speak(ttsOf(WORDS[i])));
+}
+
+function updateProgress(){
+  const done = mastery.filter(m=>m>=2).length;
+  $("progressText").textContent = `${done} / ${N} คำ`;
+  const pct = done/N*100;
+  $("progressFill").style.width = pct+"%";
+  $("trainMarker").style.left = `calc(6px + ${pct/100} * (100% - 12px))`;
+  saveProgress();
+}
+
+/* ================= タブ ================= */
+const tabs = {tabCards:"secCards", tabQuiz:"secQuiz", tabMatch:"secMatch", tabBoss:"secBoss"};
+Object.keys(tabs).forEach(id=>{
+  $(id).addEventListener("click", ()=>{
+    Object.keys(tabs).forEach(t=>{
+      $(t).classList.toggle("active", t===id);
+      $(t).setAttribute("aria-selected", t===id);
+      document.getElementById(tabs[t]).classList.toggle("show", t===id);
+    });
+  });
+});
+
+/* ================= フラッシュカード ================= */
+let curCat = "all";
+let fcOrder = [], fcIdx = 0;
+const flashcard = $("flashcard");
+
+function buildChips(){
+  const bar = $("chipBar");
+  CATS.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "chip"+(c.id==="all"?" active":"");
+    b.textContent = c.label;
+    b.addEventListener("click", ()=>{
+      curCat = c.id;
+      [...bar.children].forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      resetDeck();
+    });
+    bar.appendChild(b);
+  });
+}
+function deckIds(){
+  return [...WORDS.keys()].filter(i=>curCat==="all"||WORDS[i].cat===curCat);
+}
+function resetDeck(){ fcOrder = shuffle(deckIds()); fcIdx = 0; renderCard(); }
+function renderCard(){
+  const w = WORDS[fcOrder[fcIdx]];
+  flashcard.classList.remove("flipped");
+  $("fcEmoji").textContent = w.e;
+  $("fcWord").textContent = w.k;
+  $("fcKanji").textContent = w.kj || " ";
+  $("fcThai").textContent = w.th;
+  const trap = $("fcTrap");
+  if(w.trap){trap.hidden=false; trap.textContent="⚠️ "+w.trap;} else trap.hidden=true;
+  const known = mastery.filter(m=>m>=1).length;
+  $("fcCount").innerHTML = `การ์ดที่ ${fcIdx+1}/${fcOrder.length} · <span class="star">★</span> รู้แล้ว ${known}/${N} คำ`;
+}
+flashcard.addEventListener("click", ()=> flashcard.classList.toggle("flipped"));
+$("fcSpeak").addEventListener("click", e=>{ e.stopPropagation(); playWord(fcOrder[fcIdx]); });
+function nextCard(){ fcIdx++; if(fcIdx>=fcOrder.length){ fcOrder = shuffle(deckIds()); fcIdx=0; } renderCard(); }
+$("btnKnown").addEventListener("click", ()=>{
+  const i=fcOrder[fcIdx];
+  if(mastery[i]<1){ mastery[i]=1; saveProgress(); }
+  nextCard();
+});
+$("btnUnknown").addEventListener("click", nextCard);
+$("btnChant").addEventListener("click", ()=>{
+  const ids = curCat==="all" ? deckIds().slice(0,12) : deckIds();
+  speak(ids.map(i=>ttsOf(WORDS[i])).join("、"), 1.0);
+});
+
+/* ================= 語彙クイズ (★★) ================= */
+function makeVocabQ(){
+  const qi = Math.floor(Math.random()*N);
+  const wrongs = shuffle([...WORDS.keys()].filter(i=>i!==qi)).slice(0,3);
+  return {qi, options: shuffle([qi,...wrongs])};
+}
+let quizQs=[], quizNo=0, quizScore=0, quizLock=false;
+$("btnQuizStart").addEventListener("click", startQuiz);
+$("btnQuizAgain").addEventListener("click", startQuiz);
+function startQuiz(){
+  quizQs = Array.from({length:10}, makeVocabQ);
+  quizNo=0; quizScore=0;
+  $("quizStart").hidden=true; $("quizEnd").hidden=true; $("quizPlay").hidden=false;
+  showQuizQ();
+}
+function showQuizQ(){
+  quizLock=false;
+  const {qi} = quizQs[quizNo];
+  const w = WORDS[qi];
+  $("quizNo").textContent = `ข้อ ${quizNo+1}/10`;
+  $("quizScore").textContent = `คะแนน ${quizScore}`;
+  $("quizWord").textContent = w.k;
+  $("quizKanji").textContent = w.kj || "";
+  playWord(qi);
+  const box = $("quizChoices"); box.innerHTML="";
+  quizQs[quizNo].options.forEach(oi=>{
+    const b=document.createElement("button");
+    b.className="choice"; b.textContent=WORDS[oi].th;
+    b.addEventListener("click", ()=>answerQuiz(b,oi,qi));
+    box.appendChild(b);
+  });
+}
+$("quizSpeak").addEventListener("click", ()=> playWord(quizQs[quizNo].qi));
+function answerQuiz(btn,oi,qi){
+  if(quizLock)return; quizLock=true;
+  const ok = oi===qi;
+  btn.classList.add(ok?"correct":"wrong");
+  if(!ok){
+    [...$("quizChoices").children].forEach(c=>{ if(c.textContent===WORDS[qi].th)c.classList.add("correct"); });
+  }else{
+    quizScore++; mastery[qi]=2; updateProgress();
+  }
+  setTimeout(()=>{ quizNo++; quizNo<10 ? showQuizQ() : endQuiz(); }, 900);
+}
+function endQuiz(){
+  $("quizPlay").hidden=true; $("quizEnd").hidden=false;
+  const msg = quizScore>=9?"สุดยอด! 🌟":quizScore>=6?"ดีมาก! 💪":"ทบทวนการ์ดแล้วมาใหม่นะ 📇";
+  $("quizResult").innerHTML = `ตอบถูก <b>${quizScore}/10</b> ข้อ<br>${msg}`;
+}
+
+/* ================= ペアあわせ ================= */
+let mSel = null, mPairs = 0, mMoves = 0, mLock = false;
+$("btnMatchStart").addEventListener("click", startMatch);
+$("btnMatchAgain").addEventListener("click", startMatch);
+function startMatch(){
+  mSel = null; mPairs = 0; mMoves = 0; mLock = false;
+  $("matchStart").hidden=true; $("matchEnd").hidden=true; $("matchPlay").hidden=false;
+  const ids = shuffle([...WORDS.keys()]).slice(0,6);
+  const cards = shuffle([
+    ...ids.map(i=>({i, side:"jp"})),
+    ...ids.map(i=>({i, side:"th"}))
+  ]);
+  const grid = $("matchGrid"); grid.innerHTML = "";
+  cards.forEach(c=>{
+    const b = document.createElement("button");
+    b.className = "mcard" + (c.side==="jp" ? " jpside" : "");
+    b.textContent = c.side==="jp" ? WORDS[c.i].k : WORDS[c.i].th;
+    b.dataset.i = c.i; b.dataset.side = c.side;
+    b.addEventListener("click", ()=>tapMatch(b));
+    grid.appendChild(b);
+  });
+  updateMatchMeta();
+}
+function updateMatchMeta(){
+  $("matchPairs").textContent = `คู่ที่จับได้ ${mPairs}/6`;
+  $("matchMoves").textContent = `แตะไป ${mMoves} ครั้ง`;
+}
+function tapMatch(b){
+  if(mLock || b.classList.contains("matched") || b===mSel) return;
+  if(!mSel){ mSel = b; b.classList.add("sel"); return; }
+  mMoves++;
+  const a = mSel; mSel = null;
+  a.classList.remove("sel");
+  const same = a.dataset.i === b.dataset.i && a.dataset.side !== b.dataset.side;
+  if(same){
+    a.classList.add("matched"); b.classList.add("matched");
+    const i = Number(a.dataset.i);
+    playWord(i);
+    if(mastery[i]<1){ mastery[i]=1; saveProgress(); }
+    mPairs++;
+    updateMatchMeta();
+    if(mPairs===6) setTimeout(endMatch, 700);
+  }else{
+    mLock = true;
+    a.classList.add("miss"); b.classList.add("miss");
+    setTimeout(()=>{
+      a.classList.remove("miss"); b.classList.remove("miss");
+      mLock = false;
+    }, 550);
+    updateMatchMeta();
+  }
+}
+function endMatch(){
+  $("matchPlay").hidden=true; $("matchEnd").hidden=false;
+  const msg = mMoves<=8 ? "ความจำระดับเทพ! 🧠✨" : mMoves<=12 ? "เก่งมาก! 👏" : "ฝึกอีกนิด เดี๋ยวก็จำได้หมด 💪";
+  $("matchResult").innerHTML = `จับครบ 6 คู่ ใน <b>${mMoves}</b> ครั้ง<br>${msg}`;
+}
+
+/* ================= ボス:かるた大会 ================= */
+let bossTime=60, bossScore=0, bossStreak=0, bossTimerId=null, bossLock=false, bossTarget=-1;
+$("btnBossStart").addEventListener("click", startBoss);
+$("btnBossAgain").addEventListener("click", startBoss);
+$("bossSpeak").addEventListener("click", ()=>{ if(bossTarget>=0) playWord(bossTarget); });
+function startBoss(){
+  bossTime=60; bossScore=0; bossStreak=0;
+  $("bossStart").hidden=true; $("bossEnd").hidden=true; $("bossPlay").hidden=false;
+  clearInterval(bossTimerId);
+  bossTimerId = setInterval(()=>{
+    bossTime--; $("bossTimer").textContent=bossTime;
+    if(bossTime<=0) endBoss();
+  },1000);
+  showBossQ();
+}
+function showBossQ(){
+  bossLock=false;
+  const ids = shuffle([...WORDS.keys()]).slice(0,6);
+  bossTarget = ids[Math.floor(Math.random()*ids.length)];
+  $("bossTimer").textContent=bossTime;
+  $("bossScore").textContent=bossScore+" pt";
+  $("bossStreak").textContent = bossStreak>=2?`🔥x${bossStreak}`:"";
+  const grid = $("bossGrid"); grid.innerHTML="";
+  ids.forEach(i=>{
+    const b=document.createElement("button");
+    b.className="kcard";
+    b.innerHTML = `<div class="ke">${WORDS[i].e}</div><div class="kt">${WORDS[i].th}</div>`;
+    b.addEventListener("click", ()=>answerBoss(b,i));
+    grid.appendChild(b);
+  });
+  playWord(bossTarget);
+}
+function answerBoss(btn,i){
+  if(bossLock)return; bossLock=true;
+  const ok = i===bossTarget;
+  btn.classList.add(ok?"correct":"wrong");
+  if(ok){
+    bossStreak++;
+    bossScore += 10 + Math.min(bossStreak-1,5)*2;
+    if(mastery[bossTarget]<2){ mastery[bossTarget]=2; updateProgress(); }
+  }else{
+    bossStreak=0;
+    [...$("bossGrid").children].forEach(c=>{
+      if(c.querySelector(".kt").textContent === WORDS[bossTarget].th) c.classList.add("correct");
+    });
+  }
+  setTimeout(showBossQ, ok?400:800);
+}
+function endBoss(){
+  clearInterval(bossTimerId);
+  $("bossPlay").hidden=true; $("bossEnd").hidden=false;
+  const rank = bossScore>=250?"🏆 เซียนคารุตะ (かるた名人)"
+            :bossScore>=170?"🥋 นักคารุตะฝีมือดี (かるた選手)"
+            :bossScore>=90 ?"📚 นักเรียนขยัน (がんばりや)"
+            :"🌱 นักเดินทางฝึกหัด";
+  $("bossResult").innerHTML = `คะแนนรวม <b>${bossScore} pt</b>`;
+  $("bossRank").textContent = rank;
+}
+
+/* ================= 初期化 ================= */
+loadVoices();
+loadProgress();
+buildChips();
+resetDeck();
+updateProgress();
+</script>
+<script>
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); });
+}
+</script>
+</body>
+</html>
