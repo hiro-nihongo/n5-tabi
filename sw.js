@@ -1,11 +1,12 @@
 /* にほんへの旅 Service Worker
    更新を配布するときは下の CACHE のバージョン番号を上げること(v1 → v2)*/
-const CACHE = "n5tabi-v2";
+const CACHE = "n5tabi-v3";
 const CORE = [
   "./",
   "index.html",
   "unit0.html",
   "unit1.html",
+  "unit2.html",
   "fonts/KleeOne-Regular.woff2",
   "manifest.json",
   "icon-192.png",
