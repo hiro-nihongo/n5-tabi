@@ -10,11 +10,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  @font-face{font-family:'KleeOne';src:url('fonts/KleeOne-Regular.woff2') format('woff2');font-display:swap;}
   :root{
     --navy:#1E3A6E; --green:#00A063; --red:#E7222E; --yellow:#FFC81E;
     --bg:#EEF3F8; --ink:#1B2430; --sub:#5B6B80; --white:#FFFFFF;
     --radius:16px;
-    --jp:'M PLUS Rounded 1c','Noto Sans JP',sans-serif;
+    --jp:'KleeOne','M PLUS Rounded 1c','Noto Sans JP',sans-serif;
     --th:'Noto Sans Thai','M PLUS Rounded 1c',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -129,27 +130,38 @@
 <script>
 /* ===== ユニット定義(open:trueのものだけ入場可) ===== */
 const UNITS = [
-  {id:0,  e:"✈️", jp:"カタカナごブースト", th:"คำคาตาคานะ 150 คำ (ตัวอย่าง 40)", words:40, file:"unit0.html", key:"n5tabi_u0", open:true},
-  {id:1,  e:"🔢", jp:"すうじとじかん",     th:"ตัวเลข・เวลา・ปฏิทิน",            words:70, file:"unit1.html", key:"n5tabi_u1", open:true},
-  {id:2,  e:"🏫", jp:"がっこう",           th:"ชีวิตในโรงเรียน",                words:50},
-  {id:3,  e:"🍜", jp:"たべもの",           th:"อาหารและเครื่องดื่ม",             words:55},
-  {id:4,  e:"🏠", jp:"いえとかぞく",       th:"บ้านและครอบครัว",                words:50},
-  {id:5,  e:"⏰", jp:"わたしのいちにち",   th:"กิจวัตรประจำวัน (กริยา I)",       words:50},
-  {id:6,  e:"🛍️", jp:"かいもの",           th:"ช้อปปิ้งและเงิน",                 words:45},
-  {id:7,  e:"👕", jp:"もちものとふく",     th:"ของใช้และเสื้อผ้า",               words:45},
-  {id:8,  e:"🗺️", jp:"まちとばしょ",       th:"เมืองและสถานที่",                 words:50},
-  {id:9,  e:"🚄", jp:"こうつう・りょこう", th:"การเดินทางท่องเที่ยว",            words:50},
-  {id:10, e:"☀️", jp:"てんきときせつ",     th:"อากาศและฤดูกาล",                 words:40},
-  {id:11, e:"💪", jp:"からだとけんこう",   th:"ร่างกายและสุขภาพ",               words:45},
-  {id:12, e:"⚽", jp:"しゅみ",             th:"งานอดิเรก・กีฬา・ดนตรี",          words:45},
-  {id:13, e:"😊", jp:"きもちとけいようし", th:"ความรู้สึกและคำคุณศัพท์",         words:55},
-  {id:14, e:"🔧", jp:"どうしパワーアップ", th:"กริยา II",                        words:55},
-  {id:15, e:"🧭", jp:"いち・ほうこう",     th:"ตำแหน่ง・ทิศทาง・こそあど",       words:40},
-  {id:16, e:"🔢", jp:"じょすうし",         th:"ลักษณนามและการนับ",              words:30},
-  {id:17, e:"🙏", jp:"あいさつ",           th:"คำทักทายและวลีสำเร็จรูป",         words:40},
-  {id:18, e:"🧩", jp:"つなぎことば",       th:"คำนามธรรมและคำเชื่อม",            words:55},
-  {id:19, e:"🏯", jp:"ボスラッシュ",       th:"ทบทวนใหญ่・สอบจบ 1,000 คำ",       words:0, goal:true}
+  {id:0,  e:"✈️", jp:"カタカナごブースト", th:"คำคาตาคานะ 150 คำ (ตัวอย่าง 40)", words:40, ready:true},
+  {id:1,  e:"🔢", jp:"すうじとじかん",     th:"ตัวเลข・เวลา・ปฏิทิน",            words:70, ready:true},
+  {id:2,  e:"🏫", jp:"がっこう",           th:"ชีวิตในโรงเรียน",                words:50, ready:false},
+  {id:3,  e:"🍜", jp:"たべもの",           th:"อาหารและเครื่องดื่ม",             words:55, ready:false},
+  {id:4,  e:"🏠", jp:"いえとかぞく",       th:"บ้านและครอบครัว",                words:50, ready:false},
+  {id:5,  e:"⏰", jp:"わたしのいちにち",   th:"กิจวัตรประจำวัน (กริยา I)",       words:50, ready:false},
+  {id:6,  e:"🛍️", jp:"かいもの",           th:"ช้อปปิ้งและเงิน",                 words:45, ready:false},
+  {id:7,  e:"👕", jp:"もちものとふく",     th:"ของใช้และเสื้อผ้า",               words:45, ready:false},
+  {id:8,  e:"🗺️", jp:"まちとばしょ",       th:"เมืองและสถานที่",                 words:50, ready:false},
+  {id:9,  e:"🚄", jp:"こうつう・りょこう", th:"การเดินทางท่องเที่ยว",            words:50, ready:false},
+  {id:10, e:"☀️", jp:"てんきときせつ",     th:"อากาศและฤดูกาล",                 words:40, ready:false},
+  {id:11, e:"💪", jp:"からだとけんこう",   th:"ร่างกายและสุขภาพ",               words:45, ready:false},
+  {id:12, e:"⚽", jp:"しゅみ",             th:"งานอดิเรก・กีฬา・ดนตรี",          words:45, ready:false},
+  {id:13, e:"😊", jp:"きもちとけいようし", th:"ความรู้สึกและคำคุณศัพท์",         words:55, ready:false},
+  {id:14, e:"🔧", jp:"どうしパワーアップ", th:"กริยา II",                        words:55, ready:false},
+  {id:15, e:"🧭", jp:"いち・ほうこう",     th:"ตำแหน่ง・ทิศทาง・こそあど",       words:40, ready:false},
+  {id:16, e:"🔢", jp:"じょすうし",         th:"ลักษณนามและการนับ",              words:30, ready:false},
+  {id:17, e:"🙏", jp:"あいさつ",           th:"คำทักทายและวลีสำเร็จรูป",         words:40, ready:false},
+  {id:18, e:"🧩", jp:"つなぎことば",       th:"คำนามธรรมและคำเชื่อม",            words:55, ready:false},
+  {id:19, e:"🏯", jp:"ボスラッシュ",       th:"ทบทวนใหญ่・สอบจบ 1,000 คำ",       words:0, ready:false, goal:true}
 ];
+/* 各ユニットのファイル名と保存キーは unitN.html / n5tabi_uN で自動決定 */
+UNITS.forEach(u=>{ u.file = "unit"+u.id+".html"; u.key = "n5tabi_u"+u.id; });
+
+/* ===== 解錠ルール =====
+   RATE = 前のユニットの★★達成率がこの割合を超えると次の駅が開く (0.8 = 80%)
+   ・Unit 0,1 : 最初から開いている
+   ・Unit 2   : Unit 0 と 1 の両方が RATE 達成で開く
+   ・Unit 3〜18 : 直前のユニットが RATE 達成で開く
+   ・Unit 19(ボス) : Unit 0〜18 すべて RATE 達成で開く
+   ※ ready:false のユニットは未完成(เร็วๆ นี้)。完成して公開するとき true に変える */
+const RATE = 0.8;
 /* 地域見出し(ユニットidの直前に表示) */
 const REGIONS = {
   0:"🛫 ดอนเมือง → สนามบินนาริตะ",
@@ -164,12 +176,23 @@ const REGIONS = {
 const $ = id => document.getElementById(id);
 
 function unitDone(u){
-  if(!u.key) return 0;
   try{
     const d = JSON.parse(localStorage.getItem(u.key) || "null");
     if(Array.isArray(d)) return d.filter(v=>v>=2).length;
   }catch(e){}
   return 0;
+}
+function needWords(u){ return Math.ceil(u.words * RATE); }
+function passed(u){ return u.words > 0 && unitDone(u) >= needWords(u); }
+function prereqs(u){
+  if(u.id <= 1) return [];
+  if(u.id === 2) return [UNITS[0], UNITS[1]];
+  if(u.goal) return UNITS.filter(x => !x.goal);
+  return [UNITS[u.id - 1]];
+}
+function isUnlocked(u){
+  if(!u.ready) return false;
+  return prereqs(u).every(p => passed(p));
 }
 
 function build(){
@@ -183,24 +206,26 @@ function build(){
       h.className = "region"; h.textContent = REGIONS[u.id];
       route.appendChild(h);
     }
+    const unlocked = isUnlocked(u);
     const done = unitDone(u);
-    const isDone = u.open && u.words > 0 && done >= u.words;
-    if(u.open){ totalDone += done; totalOpen += u.words; }
+    const isDone = unlocked && u.words > 0 && done >= u.words;
+    if(unlocked){ totalDone += done; totalOpen += u.words; }
 
-    const el = document.createElement(u.open ? "a" : "div");
-    el.className = "st" + (u.open ? "" : " locked") + (isDone ? " done" : "") + (u.goal ? " goal" : "");
-    if(u.open) el.href = u.file;
+    const el = document.createElement(unlocked ? "a" : "div");
+    el.className = "st" + (unlocked ? "" : " locked") + (isDone ? " done" : "") + (u.goal ? " goal" : "");
+    if(unlocked) el.href = u.file;
 
     let meta;
-    if(u.goal){
-      meta = `<div class="meta">🔒 รอทุกยูนิต<br>เปิดครบก่อน</div>`;
-    }else if(u.open){
+    if(unlocked){
       const pct = u.words ? Math.round(done/u.words*100) : 0;
       meta = isDone
         ? `<div class="meta"><span class="done-badge">✅ สแตมป์แล้ว!</span><br>${done}/${u.words} คำ</div>`
         : `<div class="meta"><span class="pct">${pct}%</span> · ${done}/${u.words} คำ<div class="mini"><div style="width:${pct}%"></div></div></div>`;
+    }else if(!u.ready){
+      meta = `<div class="meta">🔒 เร็วๆ นี้<br>${u.words ? u.words + " คำ" : ""}</div>`;
     }else{
-      meta = `<div class="meta">🔒 เร็วๆ นี้<br>${u.words} คำ</div>`;
+      const p = prereqs(u).find(x => !passed(x));
+      meta = `<div class="meta">🔒 ผ่าน Unit ${p.id} ให้ได้<br>★★ ${unitDone(p)}/${needWords(p)} คำก่อน</div>`;
     }
     el.innerHTML = `
       <span class="emoji">${u.e}</span>
