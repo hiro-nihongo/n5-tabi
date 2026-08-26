@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#1E3A6E">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Unit 10 てんきときせつ | にほんへの旅</title>
+<title>Unit 11 からだとけんこう | にほんへの旅</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -181,20 +181,20 @@
 
 <header class="station-sign" role="banner">
   <div class="sign-main">
-    <div class="kana">てんきときせつ</div>
-    <div class="romaji">Unit 10 · Tenki to Kisetsu</div>
+    <div class="kana">からだとけんこう</div>
+    <div class="romaji">Unit 11 · Karada to Kenkō</div>
   </div>
   <div class="sign-line" aria-hidden="true">
-    <span class="prev">◀ โตเกียว<br>Tokyo</span>
+    <span class="prev">◀ โยโกฮาม่า<br>Yokohama</span>
     <span class="track"><span id="trainMarker">🚆</span></span>
-    <span class="next">โยโกฮาม่า ▶<br>Yokohama</span>
+    <span class="next">ชิซุโอกะ ▶<br>Shizuoka</span>
   </div>
 </header>
 
 <div class="platform">
   <div class="label">
     <span>ความคืบหน้า (★★ ฟังเข้าใจแล้ว)</span>
-    <span id="progressText">0 / 40 คำ</span>
+    <span id="progressText">0 / 45 คำ</span>
   </div>
   <div class="bar"><div class="fill" id="progressFill"></div></div>
 </div>
@@ -203,7 +203,7 @@
   <button class="tab active" id="tabCards" role="tab" aria-selected="true">📇 การ์ด</button>
   <button class="tab" id="tabQuiz" role="tab" aria-selected="false">🎧 ควิซ</button>
   <button class="tab" id="tabMatch" role="tab" aria-selected="false">🀄 จับคู่</button>
-  <button class="tab" id="tabBoss" role="tab" aria-selected="false">👑 พยากรณ์</button>
+  <button class="tab" id="tabBoss" role="tab" aria-selected="false">👑 ตรวจร่างกาย</button>
 </nav>
 
 <main>
@@ -214,14 +214,14 @@
     <div class="card-stage">
       <button class="flashcard" id="flashcard" aria-label="พลิกการ์ด">
         <div class="face front">
-          <div class="emoji" id="fcEmoji">🌤️</div>
-          <div class="word" id="fcWord">てんき</div>
-          <div class="kanji" id="fcKanji">天気</div>
+          <div class="emoji" id="fcEmoji">🧍</div>
+          <div class="word" id="fcWord">からだ</div>
+          <div class="kanji" id="fcKanji">体</div>
           <span class="speak-btn" id="fcSpeak">🔊 ฟังเสียง</span>
           <div class="hint">แตะการ์ดเพื่อดูความหมาย</div>
         </div>
         <div class="face back">
-          <div class="thai" id="fcThai">สภาพอากาศ</div>
+          <div class="thai" id="fcThai">ร่างกาย</div>
           <div class="trap" id="fcTrap" hidden></div>
           <div class="hint">แตะเพื่อกลับด้าน</div>
         </div>
@@ -277,8 +277,8 @@
   <section id="secBoss">
     <div class="quiz-box" id="bossStart">
       <div class="quiz-emoji">👑</div>
-      <p style="margin-top:10px;font-weight:600">บอสไฟต์: รายงานอากาศให้ทันใน 60 วินาที!<br>ฟังว่าอากาศเป็นยังไง แล้วรีบแตะให้ถูก<br>ตอบถูกติดกันได้โบนัส 🔥</p>
-      <button class="big-btn" id="btnBossStart">เริ่มพยากรณ์!</button>
+      <p style="margin-top:10px;font-weight:600">บอสไฟต์: ตรวจคนไข้ให้ทันใน 60 วินาที!<br>ฟังว่าเจ็บตรงไหน เป็นอะไร แล้วรีบแตะให้ถูก<br>ตอบถูกติดกันได้โบนัส 🔥</p>
+      <button class="big-btn" id="btnBossStart">เริ่มตรวจ!</button>
     </div>
     <div class="quiz-box" id="bossPlay" hidden>
       <div class="quiz-meta">
@@ -304,80 +304,86 @@
 </div>
 
 <p class="note">
-  สื่อการสอน Unit 10「てんきときせつ」(40 คำ) · โครงการ N5 一,〇〇〇語「にほんへの旅」<br>
+  สื่อการสอน Unit 11「からだとけんこう」(45 คำ) · โครงการ N5 一,〇〇〇語「にほんへの旅」<br>
   ความคืบหน้าจะถูกบันทึกไว้ในเครื่องของคุณโดยอัตโนมัติ
 </p>
 
 <script>
-/* ================= 語彙データ (Unit 10: 40語) =================
-   cat: weather=สภาพอากาศ, season=ฤดูกาล・เทศกาล, temp=ร้อน-หนาว・ลักษณะ, move=กริยา
-   ※ Unit 3「あつい・つめたい」/ Unit 5「はやい・おそい」は既出
-   ※「ふく(吹く)」は Unit 7「ふく(服)」と同音のため不採用 */
+/* ================= 語彙データ (Unit 11: 45語) =================
+   cat: face=หัวและใบหน้า, body=ลำตัว・แขนขา, sick=อาการป่วย・บาดเจ็บ, care=สุขภาพ・การดูแล
+   ※ 意図的な同音併存(承認済み): はな(鼻) ⇔ はな(花 Unit8) / かぜ(風邪) ⇔ かぜ(風 Unit10)
+   ※「せき(咳)」は Unit 9「せき(席)」と同音のため不採用
+   ※「かみ(髪)」は Unit 2「かみ(紙)」と同音のため「かみのけ」を採用 */
 const WORDS = [
-  // --- สภาพอากาศ (10) ---
-  {k:"てんき", kj:"天気", th:"สภาพอากาศ", e:"🌤️", cat:"weather", trap:"てんき(天気)=อากาศ / でんき(電気 Unit4)=ไฟฟ้า · ต่างกันแค่จุดเดียว"},
-  {k:"てんきよほう", kj:"天気予報", th:"พยากรณ์อากาศ", e:"📺", cat:"weather"},
-  {k:"はれ", kj:"晴れ", th:"อากาศแจ่มใส", e:"☀️", cat:"weather", trap:"はれ(晴れ)=แดดดี / はる(春)=ฤดูใบไม้ผลิ · อยู่ในบทเดียวกัน ระวัง!"},
-  {k:"くもり", kj:"曇り", th:"มีเมฆมาก", e:"🌥️", cat:"weather", trap:"くも(雲)=ก้อนเมฆ / くもり(曇り)=สภาพอากาศที่มีเมฆ"},
-  {k:"あめ", kj:"雨", th:"ฝน", e:"🌧️", cat:"weather"},
-  {k:"ゆき", kj:"雪", th:"หิมะ", e:"❄️", cat:"weather"},
-  {k:"くも", kj:"雲", th:"เมฆ", e:"☁️", cat:"weather"},
-  {k:"かぜ", kj:"風", th:"ลม", e:"🌬️", cat:"weather", trap:"かぜが つよい = ลมแรง · ญี่ปุ่นไม่ใช้ 「ふく」ในบทนี้"},
-  {k:"たいふう", kj:"台風", th:"พายุไต้ฝุ่น", e:"🌀", cat:"weather", trap:"ญี่ปุ่นมีไต้ฝุ่นมากช่วง 9月 · รถไฟหยุดวิ่งได้"},
-  {k:"かみなり", kj:"雷", th:"ฟ้าร้อง / ฟ้าผ่า", e:"⚡", cat:"weather"},
+  // --- หัวและใบหน้า (10) ---
+  {k:"からだ", kj:"体", th:"ร่างกาย", e:"🧍", cat:"face"},
+  {k:"あたま", kj:"頭", th:"หัว / ศีรษะ", e:"🧠", cat:"face", trap:"あたまが いたい = ปวดหัว"},
+  {k:"かお", kj:"顔", th:"ใบหน้า", e:"😊", cat:"face"},
+  {k:"め", kj:"目", th:"ตา", e:"👁️", cat:"face"},
+  {k:"みみ", kj:"耳", th:"หู", e:"👂", cat:"face"},
+  {k:"はな", kj:"鼻", th:"จมูก", e:"👃", cat:"face", trap:"⚠️ はな(鼻)=จมูก / はな(花 Unit8)=ดอกไม้ · เสียงเหมือนกันเป๊ะ! ดูคันจิและบริบท"},
+  {k:"くち", kj:"口", th:"ปาก", e:"👄", cat:"face"},
+  {k:"は", kj:"歯", th:"ฟัน", e:"🦷", cat:"face", trap:"は(歯) เสียงสั้นมาก · はいしゃ(หมอฟัน) มาจาก は+いしゃ"},
+  {k:"かみのけ", kj:"髪の毛", th:"เส้นผม", e:"💇", cat:"face", trap:"かみ(髪)=ผม แต่ かみ(紙 Unit2)=กระดาษ · จึงเรียนแบบเต็มว่า かみのけ"},
+  {k:"のど", kj:"喉", th:"คอ (ข้างในที่กลืนอาหาร)", e:"🗣️", cat:"face", trap:"のどが いたい = เจ็บคอ · のどがかわく(Unit3) = คอแห้ง/หิวน้ำ"},
 
-  // --- ฤดูกาลและเทศกาล (10) ---
-  {k:"きせつ", kj:"季節", th:"ฤดูกาล", e:"🔄", cat:"season", trap:"ญี่ปุ่นมี 4 ฤดู: はる・なつ・あき・ふゆ"},
-  {k:"はる", kj:"春", th:"ฤดูใบไม้ผลิ", e:"🌱", cat:"season"},
-  {k:"なつ", kj:"夏", th:"ฤดูร้อน", e:"🏖️", cat:"season"},
-  {k:"あき", kj:"秋", th:"ฤดูใบไม้ร่วง", e:"🍂", cat:"season"},
-  {k:"ふゆ", kj:"冬", th:"ฤดูหนาว", e:"⛄", cat:"season"},
-  {k:"つゆ", kj:"梅雨", th:"ฤดูฝน (สึยุ)", e:"🌂", cat:"season", trap:"つゆ = ช่วงฝนตกยาว 6〜7月 · คล้ายหน้าฝนไทยแต่สั้นกว่า"},
-  {k:"さくら", kj:"桜", th:"ซากุระ", e:"🌸", cat:"season"},
-  {k:"はなび", kj:"花火", th:"ดอกไม้ไฟ", e:"🎇", cat:"season", trap:"はな(花 Unit8) + び(火) = ดอกไม้ไฟ · งานฤดูร้อน"},
-  {k:"もみじ", kj:"紅葉", th:"ใบไม้แดง", e:"🍁", cat:"season"},
-  {k:"おしょうがつ", kj:"お正月", th:"ปีใหม่ญี่ปุ่น", e:"🎍", cat:"season"},
+  // --- ลำตัวและแขนขา (12) ---
+  {k:"くび", kj:"首", th:"ลำคอ (ด้านนอก)", e:"🦒", cat:"body"},
+  {k:"かた", kj:"肩", th:"ไหล่", e:"🤷", cat:"body"},
+  {k:"むね", kj:"胸", th:"หน้าอก", e:"🫀", cat:"body"},
+  {k:"せなか", kj:"背中", th:"หลัง", e:"🔙", cat:"body"},
+  {k:"おなか", kj:"お腹", th:"ท้อง", e:"🍽️", cat:"body", trap:"おなか(ท้อง) · おなかがすく(Unit3) = หิว"},
+  {k:"こし", kj:"腰", th:"เอว / บั้นเอว", e:"🧎", cat:"body"},
+  {k:"うで", kj:"腕", th:"แขน", e:"💪", cat:"body"},
+  {k:"て", kj:"手", th:"มือ", e:"✋", cat:"body"},
+  {k:"ゆび", kj:"指", th:"นิ้ว", e:"👆", cat:"body"},
+  {k:"つめ", kj:"爪", th:"เล็บ", e:"💅", cat:"body"},
+  {k:"あし", kj:"足", th:"ขา / เท้า", e:"🦵", cat:"body"},
+  {k:"ひざ", kj:"膝", th:"หัวเข่า", e:"🦴", cat:"body"},
 
-  // --- ร้อน-หนาวและลักษณะ (10) ---
-  {k:"さむい", kj:"寒い", th:"หนาว", e:"🥶", cat:"temp", trap:"さむい = อากาศหนาว / つめたい(Unit3) = ของเย็นเมื่อสัมผัส"},
-  {k:"すずしい", kj:"涼しい", th:"เย็นสบาย", e:"🍃", cat:"temp"},
-  {k:"あたたかい", kj:"暖かい", th:"อบอุ่น", e:"🫖", cat:"temp"},
-  {k:"むしあつい", kj:"蒸し暑い", th:"ร้อนอบอ้าว", e:"🥵", cat:"temp", trap:"あつい(Unit3) + むし(อบ) = ร้อนชื้นแบบไทยเลย"},
-  {k:"つよい", kj:"強い", th:"แรง / แข็งแรง", e:"💪", cat:"temp"},
-  {k:"よわい", kj:"弱い", th:"อ่อน / เบา", e:"🥀", cat:"temp"},
-  {k:"あかるい", kj:"明るい", th:"สว่าง", e:"💡", cat:"temp"},
-  {k:"くらい", kj:"暗い", th:"มืด", e:"🌑", cat:"temp"},
-  {k:"きおん", kj:"気温", th:"อุณหภูมิ", e:"🌡️", cat:"temp"},
-  {k:"こおり", kj:"氷", th:"น้ำแข็ง", e:"🧊", cat:"temp"},
+  // --- อาการป่วยและบาดเจ็บ (11) ---
+  {k:"びょうき", kj:"病気", th:"อาการเจ็บป่วย", e:"🤒", cat:"sick"},
+  {k:"かぜ", kj:"風邪", th:"เป็นหวัด", e:"🤧", cat:"sick", trap:"⚠️ かぜ(風邪)=หวัด / かぜ(風 Unit10)=ลม · เสียงเหมือนกันเป๊ะ! かぜを ひく = เป็นหวัด"},
+  {k:"ねつ", kj:"熱", th:"ไข้", e:"🌡️", cat:"sick", trap:"ねつが ある = มีไข้"},
+  {k:"いたい", kj:"痛い", th:"เจ็บ / ปวด", e:"😖", cat:"sick"},
+  {k:"けが", kj:"怪我", th:"บาดแผล / การบาดเจ็บ", e:"🩹", cat:"sick", trap:"けがを する = ได้รับบาดเจ็บ"},
+  {k:"くすり", kj:"薬", th:"ยา", e:"💊", cat:"sick", trap:"くすりを のむ = กินยา (ใช้ のむ ไม่ใช่ たべる)"},
+  {k:"ちゅうしゃ", kj:"注射", th:"การฉีดยา", e:"💉", cat:"sick", trap:"ちゅうしゃ(注射)=ฉีดยา / ちゅうしゃじょう(駐車場 Unit8)=ที่จอดรถ"},
+  {k:"いしゃ", kj:"医者", th:"หมอ / แพทย์", e:"🩺", cat:"sick"},
+  {k:"かんごし", kj:"看護師", th:"พยาบาล", e:"👩‍⚕️", cat:"sick"},
+  {k:"はいしゃ", kj:"歯医者", th:"หมอฟัน", e:"🪥", cat:"sick"},
+  {k:"にゅういん", kj:"入院", th:"การนอนโรงพยาบาล", e:"🛏️", cat:"sick"},
 
-  // --- กริยา (10) ---
-  {k:"ふる", kj:"降る", th:"(ฝน・หิมะ) ตก", e:"🌦️", cat:"move", trap:"あめが ふる = ฝนตก · ใช้กับ あめ・ゆき เท่านั้น"},
-  {k:"やむ", kj:"止む", th:"หยุดตก", e:"🌈", cat:"move", trap:"あめが やむ = ฝนหยุด / やすむ(Unit5) = พักผ่อน"},
-  {k:"さく", kj:"咲く", th:"บาน", e:"🌷", cat:"move", trap:"さくらが さく = ซากุระบาน"},
-  {k:"とける", kj:"溶ける", th:"ละลาย", e:"💧", cat:"move"},
-  {k:"つもる", kj:"積もる", th:"ทับถม / กองสูง", e:"🏔️", cat:"move", trap:"ゆきが つもる = หิมะกองทับถม"},
-  {k:"ぬれる", kj:"濡れる", th:"เปียก", e:"💦", cat:"move"},
-  {k:"ひえる", kj:"冷える", th:"เย็นลง", e:"🆒", cat:"move"},
-  {k:"ひかる", kj:"光る", th:"ส่องแสง", e:"✨", cat:"move"},
-  {k:"かわる", kj:"変わる", th:"เปลี่ยนแปลง", e:"🔀", cat:"move", trap:"かわる(変わる)=เปลี่ยน / かえる(帰る Unit4)=กลับบ้าน / かわ(川 Unit8)=แม่น้ำ"},
-  {k:"つづく", kj:"続く", th:"ต่อเนื่อง", e:"➰", cat:"move"}
+  // --- สุขภาพและการดูแล (12) ---
+  {k:"けんこう", kj:"健康", th:"สุขภาพ", e:"💚", cat:"care"},
+  {k:"げんき", kj:"元気", th:"สบายดี / สดชื่น", e:"😄", cat:"care", trap:"おげんきですか = สบายดีไหม · คำทักทายที่ใช้บ่อยที่สุด"},
+  {k:"だいじょうぶ", kj:"大丈夫", th:"ไม่เป็นไร / โอเค", e:"👌", cat:"care", trap:"だいじょうぶ? = ไหวไหม? · ตอบว่า だいじょうぶです"},
+  {k:"しんぱい", kj:"心配", th:"เป็นห่วง / กังวล", e:"😟", cat:"care"},
+  {k:"なおる", kj:"治る", th:"หายป่วย", e:"🌟", cat:"care", trap:"はやく なおって ください = ขอให้หายไวๆ"},
+  {k:"たいおん", kj:"体温", th:"อุณหภูมิร่างกาย", e:"🤍", cat:"care", trap:"たいおん(体温)=ของร่างกาย / きおん(気温 Unit10)=ของอากาศ"},
+  {k:"うんどう", kj:"運動", th:"การออกกำลังกาย", e:"🏃", cat:"care"},
+  {k:"ちから", kj:"力", th:"พลัง / กำลัง", e:"🦾", cat:"care"},
+  {k:"こえ", kj:"声", th:"เสียง (ที่คนเปล่ง)", e:"📢", cat:"care"},
+  {k:"いのち", kj:"命", th:"ชีวิต", e:"🕊️", cat:"care"},
+  {k:"あんぜん", kj:"安全", th:"ปลอดภัย", e:"🦺", cat:"care", trap:"あんぜん ⇔ あぶない(Unit9) · เป็นคู่ตรงข้าม"},
+  {k:"きをつける", kj:"気をつける", th:"ระวัง / ดูแลตัวเอง", e:"🙌", cat:"care", trap:"きを つけて! = ระวังนะ / เดินทางปลอดภัยนะ"}
 ];
-const N = WORDS.length;   // 40
+const N = WORDS.length;   // 45
 const CATS = [
   {id:"all", label:"ทั้งหมด"},
-  {id:"weather", label:"🌤️ อากาศ"},
-  {id:"season", label:"🌸 ฤดูกาล"},
-  {id:"temp", label:"🥶 ร้อน-หนาว"},
-  {id:"move", label:"🌦️ กริยา"}
+  {id:"face", label:"😊 หัว・ใบหน้า"},
+  {id:"body", label:"💪 ลำตัว・แขนขา"},
+  {id:"sick", label:"🤒 อาการป่วย"},
+  {id:"care", label:"💚 สุขภาพ"}
 ];
 
 /* 進捗: 0=まだ, 1=★, 2=★★ */
 const mastery = new Array(N).fill(0);
 /* 端末に進捗を保存(非対応環境では無視される) */
-function saveProgress(){ try{ localStorage.setItem("n5tabi_u10", JSON.stringify(mastery)); }catch(e){} }
+function saveProgress(){ try{ localStorage.setItem("n5tabi_u11", JSON.stringify(mastery)); }catch(e){} }
 function loadProgress(){
   try{
-    const d = JSON.parse(localStorage.getItem("n5tabi_u10") || "null");
+    const d = JSON.parse(localStorage.getItem("n5tabi_u11") || "null");
     if(Array.isArray(d) && d.length === N) d.forEach((v,i)=> mastery[i] = v);
   }catch(e){}
 }
@@ -386,9 +392,9 @@ const $ = id => document.getElementById(id);
 const shuffle = a => a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);
 
 /* ===== 音声システム =====
-   1) audio/u10_XX.mp3(または .wav)があればそれを再生(アクセント保証)
+   1) audio/u11_XX.mp3(または .wav)があればそれを再生(アクセント保証)
    2) なければ端末TTSにフォールバック */
-const UNIT = "u10";
+const UNIT = "u11";
 
 let jaVoices = [], chosenVoice = null;
 function rankVoice(v){
@@ -672,9 +678,9 @@ function answerBoss(btn,i){
 function endBoss(){
   clearInterval(bossTimerId);
   $("bossPlay").hidden=true; $("bossEnd").hidden=false;
-  const rank = bossScore>=250?"🏆 นักพยากรณ์ระดับตำนาน (天気の達人)"
-            :bossScore>=170?"🌈 อ่านฟ้าเก่งมาก (空よみ上手)"
-            :bossScore>=90 ?"☂️ ลูกมือขยัน (がんばりや)"
+  const rank = bossScore>=250?"🏆 คุณหมอระดับตำนาน (名医)"
+            :bossScore>=170?"🩺 ตรวจเก่งมาก (お医者さん上手)"
+            :bossScore>=90 ?"💊 ลูกมือขยัน (がんばりや)"
             :"🌱 นักเดินทางฝึกหัด";
   $("bossResult").innerHTML = `คะแนนรวม <b>${bossScore} pt</b>`;
   $("bossRank").textContent = rank;
