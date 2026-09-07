@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="th" data-tier="bronze">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FBF9F5">
+<title>日本語さくらんぼ 銅 | にほんへの旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF9F5;
+    --card:#FFFFFF;
+    --ink:#38352F;
+    --sub:#96907F;
+    --faint:#B9B3A3;
+    --line:#EAE5DA;
+    --accent:#A8815A;      /* 段によって差し替わる */
+    --accent-d:#8A6743;
+    --sand:#F3EDE0;
+    --jp:'Klee One','Klee Medium','Klee','Klee One SemiBold',
+         'YuKyokasho','UD Digi Kyokasho N-R','Hiragino Mincho ProN','Noto Serif JP',serif;
+    --th:'Noto Sans Thai',sans-serif;
+  }
+  /* ===== 段(銅・銀・金)の色 ===== */
+  [data-tier="bronze"]{--accent:#A8815A;--accent-d:#8A6743;--hi:#D3B189;--sand:#F5EDE2;
+                       --cherry:#EC7F96;--cherry-b:#D96C89;--leaf:#C6D6AE}
+  [data-tier="silver"]{--accent:#8D949B;--accent-d:#6E757C;--hi:#C7CDD2;--sand:#EFF1F3;
+                       --cherry:#FF7EA4;--cherry-b:#F26892;--leaf:#B4D897}
+  [data-tier="gold"]  {--accent:#B29444;--accent-d:#8F7532;--hi:#E0C577;--sand:#F6F0DD;
+                       --cherry:#FF6E9C;--cherry-b:#F0578A;--leaf:#AEDA8A}
+  /* かすかな金属の照り */
+  :root{
+    --sheen:linear-gradient(100deg,
+      var(--accent-d) 0%, var(--accent) 20%,
+      var(--hi) 44%, var(--accent) 64%, var(--accent-d) 100%);
+    --sheen-v:linear-gradient(165deg,
+      var(--hi) 0%, var(--accent) 46%, var(--accent-d) 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:20px 16px 36px;
+    display:flex;flex-direction:column;align-items:center;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+
+  .wrap{width:100%;max-width:480px}
+
+  /* ===== ヘッダー ===== */
+  .head{padding:0 2px}
+  .head-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .tier{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--sub)}
+  .tier .dot{
+    width:9px;height:9px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 32% 28%, var(--hi) 0%, var(--accent) 55%, var(--accent-d) 100%);
+  }
+  .tier b{font-family:var(--jp);font-weight:600;color:var(--accent-d);font-size:13px}
+  .tier span{font-weight:400;letter-spacing:.04em}
+  .lap{font-size:12px;font-weight:400;color:var(--faint);font-variant-numeric:tabular-nums}
+  .bar{height:2px;background:var(--line);margin-top:10px;border-radius:1px;overflow:hidden}
+  .fill{height:100%;width:0%;background:var(--sheen);transition:width .3s ease}
+
+  /* ===== カード ===== */
+  .card{
+    width:100%;margin-top:22px;background:var(--card);
+    border:1px solid var(--line);border-radius:14px;
+    min-height:280px;padding:34px 24px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;transition:border-color .25s ease;
+  }
+  .card{position:relative;overflow:hidden}
+  .card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--sheen);
+  }
+  .card.revealed{border-color:var(--line)}
+
+  .front-jp{font-family:var(--jp);font-weight:600;font-size:clamp(27px,7.6vw,36px);color:var(--ink);line-height:1.55;letter-spacing:.02em}
+  .front-th{font-size:clamp(23px,6.6vw,29px);font-weight:500;color:var(--ink);line-height:1.6}
+
+  .ans{width:100%;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+  .ans-th{font-size:clamp(21px,6.2vw,26px);font-weight:500;color:var(--accent-d);line-height:1.6}
+  .ans-jp{font-family:var(--jp);font-weight:600;font-size:clamp(25px,7vw,32px);color:var(--accent-d);line-height:1.5}
+  .refs{font-size:11px;color:var(--faint);margin-top:16px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+  .trap{
+    margin-top:14px;font-size:12.5px;background:var(--sand);
+    border-radius:8px;padding:9px 13px;color:#7A6E52;line-height:1.6;text-align:left;
+  }
+  .tap-hint{font-size:12px;color:var(--faint);margin-top:20px;font-weight:400}
+  .speak{
+    margin-top:16px;font-size:12.5px;font-weight:500;color:var(--sub);
+    border:1px solid var(--line);border-radius:999px;padding:6px 15px;
+  }
+
+  /* ===== ボタン ===== */
+  .btns{display:flex;gap:10px;margin-top:18px}
+  .btn{
+    flex:1;padding:17px 8px;border-radius:12px;font-weight:600;font-size:15px;
+    border:1px solid var(--line);transition:opacity .15s;
+  }
+  .btn:active{opacity:.6}
+  .btn .mark{font-family:var(--jp);font-size:17px;margin-right:5px}
+  .btn.maybe{background:var(--card);color:var(--sub)}
+  .btn.ok{
+    background:var(--sheen-v);color:#fff;border-color:var(--accent-d);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  .btns.hidden{visibility:hidden}
+
+  /* ===== 終了画面 ===== */
+  .end{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:38px 24px 26px;text-align:center;margin-top:22px;
+  }
+  .end .ttl{font-family:var(--jp);font-size:19px;font-weight:600;color:var(--ink);letter-spacing:.03em}
+  .end .sub{font-size:13px;color:var(--sub);margin-top:6px}
+  .tally{display:flex;justify-content:center;gap:34px;margin-top:26px;padding-top:24px;border-top:1px solid var(--line)}
+  .tally div{display:flex;flex-direction:column;gap:5px}
+  .tally .n{font-size:30px;font-weight:600;color:var(--accent-d);font-variant-numeric:tabular-nums;line-height:1}
+  .tally .n.mb{color:var(--faint)}
+  .tally .l{font-size:11.5px;color:var(--sub)}
+  .end-btns{margin-top:28px}
+  .big-btn{
+    display:block;width:100%;margin-top:9px;padding:15px;border-radius:12px;
+    font-size:14.5px;font-weight:600;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);transition:opacity .15s;
+  }
+  .big-btn:active{opacity:.6}
+  .big-btn.solid{
+    background:var(--sheen-v);color:#fff;border-color:var(--accent-d);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  .big-btn[disabled]{opacity:.35;pointer-events:none}
+
+  /* ===== マスコット「まめちゃん」 ===== */
+  .mame{
+    width:100%;display:flex;justify-content:flex-end;align-items:flex-end;
+    padding:0 6px;margin-top:18px;pointer-events:none;
+  }
+  .bubble{
+    max-width:170px;font-size:11.5px;line-height:1.6;color:var(--sub);
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:7px 12px;margin:0 9px 12px 0;position:relative;
+    opacity:0;transform:translateY(4px);transition:opacity .4s ease,transform .4s ease;
+  }
+  .bubble.show{opacity:1;transform:none}
+  .bubble::before,.bubble::after{
+    content:"";position:absolute;bottom:10px;width:0;height:0;
+    border-top:5px solid transparent;border-bottom:5px solid transparent;
+  }
+  .bubble::before{right:-7px;border-left:7px solid var(--line)}
+  .bubble::after{right:-6px;border-left:6px solid var(--card)}
+  .mame svg{width:52px;height:auto;display:block;animation:breathe 4.2s ease-in-out infinite;transform-origin:50% 100%}
+  .mame svg .eye{transform-box:fill-box;transform-origin:center;animation:blink 6.5s infinite}
+  .mame svg .eye.r{animation-delay:.08s}
+  .mame.hop svg{animation:hop .55s ease}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-7px)}55%{transform:translateY(0)}75%{transform:translateY(-2px)}100%{transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){.mame svg,.mame svg .eye{animation:none}}
+
+  .note{font-size:11px;color:var(--faint);text-align:center;margin-top:26px;line-height:1.9}
+  .devlink{font-size:11px;color:var(--sub);text-decoration:underline;font-family:var(--jp)}
+  .hide{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== 練習画面 ===== -->
+  <div id="playView">
+    <div class="head">
+      <div class="head-top">
+        <span class="tier"><i class="dot"></i><b id="tierName">銅</b><span id="modeName">ญี่ปุ่น ➜ ไทย</span></span>
+        <span class="lap" id="lapText">รอบ 1 · 1/20</span>
+      </div>
+      <div class="bar"><div class="fill" id="fill"></div></div></div>
+    </div>
+
+    <div class="card" id="card">
+      <div id="cardFront"></div>
+      <div id="cardAns" class="hide"></div>
+      <div class="tap-hint" id="tapHint">แตะเพื่อดูคำตอบ</div>
+    </div>
+
+    <div class="btns hidden" id="btns">
+      <button class="btn maybe" id="btnMaybe"><span class="mark">△</span>ยังไม่ชัวร์</button>
+      <button class="btn ok" id="btnOk"><span class="mark">○</span>รู้แล้ว</button>
+    </div>
+  </div>
+
+  <!-- ===== 終了画面 ===== -->
+  <div id="endView" class="hide">
+    <div class="end">
+      <div class="ttl">おつかれさま</div>
+      <div class="sub" id="endLap"></div>
+      <div class="tally">
+        <div><span class="n" id="endOk">0</span><span class="l">รู้แล้ว</span></div>
+        <div><span class="n mb" id="endMaybe">0</span><span class="l">ยังไม่ชัวร์</span></div>
+      </div>
+      <div class="end-btns">
+        <button class="big-btn solid" id="btnAgain">ต่อไปอีก 20 คู่</button>
+        <button class="big-btn" id="btnMaybeOnly">เฉพาะที่ยังไม่ชัวร์</button>
+        <button class="big-btn" id="btnUra">ไทย ➜ ญี่ปุ่น</button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+  <!-- ===== さくらんぼちゃん(見守り役) ===== -->
+  <div class="mame" id="mame" aria-hidden="true">
+    <div class="bubble" id="bubble"></div>
+    <svg viewBox="0 0 48 62" xmlns="http://www.w3.org/2000/svg">
+      <!-- じく -->
+      <g fill="none" stroke="var(--accent-d)" stroke-width="2" stroke-linecap="round">
+        <path d="M15.5 31.5C15 22 20 14.5 26 11"/>
+        <path d="M34.5 37C35 26 30 15 26 11"/>
+      </g>
+      <!-- は -->
+      <path d="M26 11C28 4.5 34 2.5 39 4.5C37 10.5 31 13.5 26 11Z"
+            fill="var(--leaf)" stroke="var(--accent-d)" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M27.5 10.2C30.5 8.4 34 6.2 37.6 5.2" fill="none"
+            stroke="var(--accent-d)" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+
+      <!-- 右のこ(うしろ) -->
+      <circle cx="34.5" cy="47.5" r="11" fill="var(--cherry-b)" stroke="var(--accent-d)" stroke-width="1.6"/>
+      <ellipse cx="28.2" cy="51.2" rx="2.4" ry="1.5" fill="#FFFFFF" opacity=".32"/>
+      <ellipse cx="41.2" cy="51.2" rx="2.4" ry="1.5" fill="#FFFFFF" opacity=".32"/>
+      <g class="eye">
+        <ellipse cx="31" cy="46.5" rx="2.9" ry="3.3" fill="#40382F"/>
+        <circle cx="32.1" cy="45.3" r="1" fill="#FFFFFF"/>
+      </g>
+      <g class="eye r">
+        <ellipse cx="38.6" cy="46.5" rx="2.9" ry="3.3" fill="#40382F"/>
+        <circle cx="39.7" cy="45.3" r="1" fill="#FFFFFF"/>
+      </g>
+      <path d="M33.3 52.2C34.2 53.4 35.6 53.4 36.5 52.2" fill="none"
+            stroke="#40382F" stroke-width="1.4" stroke-linecap="round"/>
+
+      <!-- 左のこ(まえ) -->
+      <circle cx="15.5" cy="44" r="13" fill="var(--cherry)" stroke="var(--accent-d)" stroke-width="1.7"/>
+      <path d="M7.6 38.4C8.8 34.8 11.2 32.4 14.2 31.6" fill="none"
+            stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+      <ellipse cx="7.6" cy="47.8" rx="2.9" ry="1.8" fill="#FFFFFF" opacity=".32"/>
+      <ellipse cx="23.4" cy="47.8" rx="2.9" ry="1.8" fill="#FFFFFF" opacity=".32"/>
+      <g class="eye">
+        <ellipse cx="11.2" cy="42.6" rx="3.3" ry="3.8" fill="#40382F"/>
+        <circle cx="12.4" cy="41.2" r="1.2" fill="#FFFFFF"/>
+      </g>
+      <g class="eye r">
+        <ellipse cx="20.2" cy="42.6" rx="3.3" ry="3.8" fill="#40382F"/>
+        <circle cx="21.4" cy="41.2" r="1.2" fill="#FFFFFF"/>
+      </g>
+      <path d="M13.7 49.2C14.8 50.7 16.4 50.7 17.5 49.2" fill="none"
+            stroke="#40382F" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <p class="note">
+    ทองแดง · 100 คู่<br>
+    มิน = みんなの日本語 · อากิ = あきこと友だち
+  </p>
+</div>
+
+<script>
+/* ================= データ (試作20ペア) =================
+   jp:日本語 / th:タイ語 / mn:みんなの日本語 / ak:あきこと友だち
+   ※ mn・ak の数字は仮。先生が実物に合わせて直す                */
+const PAIRS = [
+  {jp:"ごはんを たべる", th:"กินข้าว", mn:6, ak:3},
+  {jp:"みずを のむ", th:"ดื่มน้ำ", mn:6, ak:5},
+  {jp:"あさごはんを つくる", th:"ทำอาหารเช้า", mn:15, ak:5},
+  {jp:"おべんとうを もっていく", th:"เอาข้าวกล่องไป", mn:15, ak:18},
+  {jp:"コーヒーを いれる", th:"ชงกาแฟ", mn:16, ak:14},
+  {jp:"りょうりを する", th:"ทำอาหาร", mn:8, ak:3},
+  {jp:"さらを あらう", th:"ล้างจาน", mn:18, ak:14},
+  {jp:"はしを つかう", th:"ใช้ตะเกียบ", mn:15, ak:18, trap:"はし=ตะเกียบ/สะพาน(金で対)"},
+  {jp:"おなかが すく", th:"หิวข้าว", mn:null, ak:16},
+  {jp:"のどが かわく", th:"กระหายน้ำ", mn:null, ak:16},
+  {jp:"がっこうへ いく", th:"ไปโรงเรียน", mn:5, ak:4},
+  {jp:"うちへ かえる", th:"กลับบ้าน", mn:5, ak:4},
+  {jp:"でんしゃに のる", th:"ขึ้นรถไฟ", mn:15, ak:4, trap:"のる=「に」"},
+  {jp:"バスを おりる", th:"ลงจากรถเมล์", mn:14, ak:11, trap:"おりる=「を」"},
+  {jp:"えきで まつ", th:"รอที่สถานี", mn:14, ak:21},
+  {jp:"こうえんを さんぽする", th:"เดินเล่นในสวน", mn:13, ak:11},
+  {jp:"みちを わたる", th:"ข้ามถนน", mn:23, ak:11},
+  {jp:"うちを でる", th:"ออกจากบ้าน", mn:13, ak:11},
+  {jp:"がっこうに つく", th:"ถึงโรงเรียน", mn:23, ak:2},
+  {jp:"かさを さす", th:"กางร่ม", mn:2, ak:16},
+  {jp:"ほんを よむ", th:"อ่านหนังสือ", mn:6, ak:1},
+  {jp:"じを かく", th:"เขียนตัวอักษร", mn:6, ak:10},
+  {jp:"おんがくを きく", th:"ฟังเพลง", mn:6, ak:5},
+  {jp:"テレビを みる", th:"ดูทีวี", mn:4, ak:5},
+  {jp:"にほんごを はなす", th:"พูดภาษาญี่ปุ่น", mn:7, ak:10},
+  {jp:"かんじを おぼえる", th:"จำคันจิ", mn:17, ak:19},
+  {jp:"しゅくだいを する", th:"ทำการบ้าน", mn:6, ak:5},
+  {jp:"じしょを ひく", th:"เปิดพจนานุกรม", mn:18, ak:9},
+  {jp:"にほんごで いう", th:"บอกเป็นภาษาญี่ปุ่น", mn:21, ak:2},
+  {jp:"べんきょうを はじめる", th:"เริ่มเรียน", mn:14, ak:14},
+  {jp:"でんきを つける", th:"เปิดไฟ", mn:14, ak:14, trap:"30〜33で2組の対"},
+  {jp:"でんきを けす", th:"ปิดไฟ", mn:14, ak:10},
+  {jp:"まどを あける", th:"เปิดหน้าต่าง", mn:14, ak:10},
+  {jp:"まどを しめる", th:"ปิดหน้าต่าง", mn:14, ak:2},
+  {jp:"かぎを かける", th:"ล็อกกุญแจ", mn:7, ak:12},
+  {jp:"でんわを かける", th:"โทรหา", mn:7, ak:12},
+  {jp:"にもつを おく", th:"วางสัมภาระ", mn:15, ak:10},
+  {jp:"ごみばこに いれる", th:"ใส่ถังขยะ", mn:16, ak:14},
+  {jp:"しゃしんを とる", th:"ถ่ายรูป", mn:6, ak:2},
+  {jp:"おふろに はいる", th:"แช่อ่างอาบน้ำ", mn:13, ak:11},
+  {jp:"はを みがく", th:"แปรงฟัน", mn:18, ak:25},
+  {jp:"かおを あらう", th:"ล้างหน้า", mn:18, ak:14},
+  {jp:"シャワーを あびる", th:"อาบน้ำฝักบัว", mn:16, ak:5},
+  {jp:"ふくを きる", th:"ใส่เสื้อผ้า", mn:22, ak:22},
+  {jp:"くつを はく", th:"ใส่รองเท้า", mn:11, ak:12, trap:"43〜46 ใส่4種"},
+  {jp:"ぼうしを かぶる", th:"ใส่หมวก", mn:22, ak:20},
+  {jp:"めがねを かける", th:"ใส่แว่นตา", mn:22, ak:12},
+  {jp:"ふくを ぬぐ", th:"ถอดเสื้อผ้า", mn:22, ak:22},
+  {jp:"ベッドで ねる", th:"นอนบนเตียง", mn:10, ak:5, trap:"ねる=で"},
+  {jp:"ベッドから おきる", th:"ลุกจากเตียง", mn:10, ak:5, trap:"おきる=から"},
+  {jp:"じゅぎょうが はじまる", th:"คาบเรียนเริ่ม", mn:18, ak:3},
+  {jp:"じゅぎょうが おわる", th:"คาบเรียนจบ", mn:18, ak:3},
+  {jp:"あいさつを する", th:"ทักทาย", mn:null, ak:19},
+  {jp:"へんじを する", th:"ตอบรับ(ขานรับ)", mn:null, ak:null},
+  {jp:"なまえを よぶ", th:"เรียกชื่อ", mn:14, ak:9},
+  {jp:"てを あげる", th:"ยกมือ", mn:7, ak:15},
+  {jp:"いすに すわる", th:"นั่งเก้าอี้", mn:15, ak:2},
+  {jp:"せんせいに きく", th:"ถามครู", mn:6, ak:5, trap:"きく②に=ถาม"},
+  {jp:"ともだちに あう", th:"เจอเพื่อน", mn:6, ak:18, trap:"あう=「に」"},
+  {jp:"テストが ある", th:"มีการสอบ", mn:9, ak:8},
+  {jp:"プレゼントを あげる", th:"ให้ของขวัญ", mn:7, ak:15, trap:"60〜63 方向2組"},
+  {jp:"プレゼントを もらう", th:"ได้รับของขวัญ", mn:7, ak:15},
+  {jp:"ほんを かす", th:"ให้ยืมหนังสือ", mn:7, ak:2},
+  {jp:"ほんを かりる", th:"ยืมหนังสือ", mn:6, ak:4},
+  {jp:"てがみを だす", th:"ส่งจดหมาย", mn:13, ak:10},
+  {jp:"おれいを いう", th:"กล่าวขอบคุณ", mn:21, ak:10},
+  {jp:"ともだちと はなす", th:"คุยกับเพื่อน", mn:7, ak:10},
+  {jp:"メールを おくる", th:"ส่งข้อความ", mn:7, ak:null},
+  {jp:"ともだちを つれていく", th:"พาเพื่อนไป", mn:24, ak:1, trap:"คน=つれていく"},
+  {jp:"えきまで おくる", th:"ไปส่งถึงสถานี", mn:7, ak:null},
+  {jp:"みせに はいる", th:"เข้าร้าน", mn:13, ak:11},
+  {jp:"パンを かう", th:"ซื้อขนมปัง", mn:6, ak:2},
+  {jp:"おかねを はらう", th:"จ่ายเงิน", mn:17, ak:null},
+  {jp:"コンビニで かう", th:"ซื้อที่ร้านสะดวกซื้อ", mn:10, ak:1},
+  {jp:"かいものを する", th:"ไปซื้อของ", mn:5, ak:6},
+  {jp:"かばんに いれる", th:"ใส่กระเป๋า", mn:16, ak:14},
+  {jp:"おみやげを さがす", th:"หาของฝาก", mn:null, ak:7},
+  {jp:"くだものが たかい", th:"ผลไม้แพง", mn:8, ak:8, trap:"ญี่ปุ่นผลไม้แพงจริง"},
+  {jp:"おかねが ない", th:"ไม่มีเงิน", mn:7, ak:1},
+  {jp:"レジに ならぶ", th:"ต่อแถวจ่ายเงิน", mn:null, ak:25},
+  {jp:"あたまが いたい", th:"ปวดหัว", mn:16, ak:16},
+  {jp:"おなかが いたい", th:"ปวดท้อง", mn:9, ak:16},
+  {jp:"ねつが ある", th:"มีไข้", mn:9, ak:16},
+  {jp:"かぜを ひく", th:"เป็นหวัด", mn:18, ak:16},
+  {jp:"くすりを のむ", th:"กินยา", mn:11, ak:16, trap:"ยาใช้ のむ ไม่ใช่ たべる"},
+  {jp:"きぶんが わるい", th:"รู้สึกไม่สบาย", mn:8, ak:16},
+  {jp:"とても つかれる", th:"เหนื่อยมาก", mn:13, ak:16},
+  {jp:"せが たかい", th:"ตัวสูง", mn:8, ak:8},
+  {jp:"めが いい", th:"สายตาดี", mn:1, ak:1},
+  {jp:"びょういんに いく", th:"ไปโรงพยาบาล", mn:5, ak:16},
+  {jp:"へやを そうじする", th:"ทำความสะอาดห้อง", mn:3, ak:5},
+  {jp:"せんたくを する", th:"ซักผ้า", mn:19, ak:5},
+  {jp:"シーツを あらう", th:"ซักผ้าปูที่นอน", mn:18, ak:14},
+  {jp:"へやを かたづける", th:"เก็บห้องให้เรียบร้อย", mn:3, ak:null},
+  {jp:"ははを てつだう", th:"ช่วยแม่", mn:14, ak:23},
+  {jp:"かぎを なくす", th:"ทำกุญแจหาย", mn:17, ak:null},
+  {jp:"かさを わすれる", th:"ลืมร่ม", mn:17, ak:16},
+  {jp:"さいふを おとす", th:"ทำกระเป๋าสตางค์หล่น", mn:null, ak:15},
+  {jp:"じかんが ある", th:"มีเวลา", mn:9, ak:3},
+  {jp:"じかんが かかる", th:"ใช้เวลานาน", mn:11, ak:4},
+];
+
+/* 段を切り替える: "bronze" | "silver" | "gold" */
+/* ===== この3行だけ段ごとに変える =====
+   銅: "bronze" / 0    銀: "silver" / 100    金: "gold" / 200 */
+const TIER         = "bronze";
+const AUDIO_OFFSET = 0;
+const KEY_SUFFIX   = "dou";
+const TIER_NAME = {bronze:"銅", silver:"銀", gold:"金"};
+document.documentElement.dataset.tier = TIER;
+
+/* さくらんぼちゃんのひとこと (0から数えた位置) */
+const CHEER = {
+  9:  "อีกครึ่งทางแล้ว!",
+  16: "อีกนิดเดียว สู้ๆ!"
+};
+
+const KEY = "n5peanuts_" + KEY_SUFFIX;
+const $ = id => document.getElementById(id);
+
+/* ---- 保存するのは周回数と△だけ ---- */
+let state = {lap:0, maybe:[], uraOpen:false};
+try{
+  const d = JSON.parse(localStorage.getItem(KEY) || "null");
+  if(d && typeof d.lap === "number") state = Object.assign(state, d);
+}catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+
+/* ---- 音声 (本番は audio/pea_XX.mp3 · なければ端末TTS) ---- */
+let jaVoice = null;
+function pickVoice(){
+  if(!("speechSynthesis" in window)) return;
+  const PRI = ["Google 日本語","Nanami","Kyoko","O-Ren","Otoya"];
+  const vs = speechSynthesis.getVoices().filter(v=>v.lang && v.lang.toLowerCase().startsWith("ja"));
+  vs.sort((a,b)=>{
+    const r=v=>{const i=PRI.findIndex(p=>v.name.includes(p));return i<0?99:i;};
+    return r(a)-r(b);
+  });
+  jaVoice = vs[0] || null;
+}
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = pickVoice;
+pickVoice();
+
+function speak(text){
+  try{
+    if(!("speechSynthesis" in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/\s/g,""));
+    if(jaVoice) u.voice = jaVoice;
+    u.lang="ja-JP"; u.rate=0.9;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function playPair(i){
+  const base = "audio/pea_" + String(i + AUDIO_OFFSET).padStart(3,"0");
+  const a = new Audio(base + ".mp3");
+  let done = false;
+  const fb = ()=>{ if(!done){ done=true; speak(PAIRS[i].jp); } };
+  a.onerror = fb;
+  a.play().catch(fb);
+}
+
+/* ---- セッション ---- */
+const SESSION = 20;                 // 1回に出すペア数
+let order = [], idx = 0, revealed = false;
+let ura = false, sOk = 0, sMaybe = [];
+
+function startSession(ids, isUra){
+  ura = !!isUra;
+  order = ids.slice();
+  idx = 0; sOk = 0; sMaybe = [];
+  $("endView").classList.add("hide");
+  $("playView").classList.remove("hide");
+  $("tierName").textContent = TIER_NAME[TIER];
+  $("modeName").textContent = ura ? "ไทย ➜ ญี่ปุ่น" : "ญี่ปุ่น ➜ ไทย";
+  render();
+}
+
+function render(){
+  revealed = false;
+  const i = order[idx];
+  const p = PAIRS[i];
+  $("card").classList.remove("revealed");
+  $("cardAns").classList.add("hide");
+  $("btns").classList.add("hidden");
+  $("tapHint").classList.remove("hide");
+  $("tapHint").textContent = ura ? "พูดในใจก่อน แล้วแตะเช็ก" : "แตะเพื่อดูคำตอบ";
+
+  if(ura){
+    $("cardFront").innerHTML = `<div class="front-th">${p.th}</div>`;
+  }else{
+    $("cardFront").innerHTML =
+      `<div class="front-jp">${p.jp}</div>
+       <button class="speak" id="spk">ฟังอีกครั้ง</button>`;
+    $("spk").addEventListener("click", e=>{ e.stopPropagation(); playPair(i); });
+    playPair(i);
+  }
+
+  /* ひとこと */
+  const bub = $("bubble"), msg = order.length >= 15 ? CHEER[idx] : null;
+  if(msg){
+    bub.textContent = msg;
+    bub.classList.add("show");
+    const m = $("mame");
+    m.classList.remove("hop"); void m.offsetWidth; m.classList.add("hop");
+  }else{
+    bub.classList.remove("show");
+  }
+
+  const gpos = ((state.pos || 0) + idx) % PAIRS.length;
+  $("lapText").textContent = `รอบ ${state.lap+1} · ${gpos+1}/${PAIRS.length}`;
+  $("fill").style.width = (idx/order.length*100) + "%";
+}
+
+function reveal(){
+  if(revealed) return;
+  revealed = true;
+  const i = order[idx];
+  const p = PAIRS[i];
+  const refs = `みん ${p.mn ?? "—"} · あき ${p.ak ?? "—"}`;
+  const trap = p.trap ? `<div class="trap">※ ${p.trap}</div>` : "";
+
+  $("cardAns").innerHTML = ura
+    ? `<div class="ans"><div class="ans-jp">${p.jp}</div>${trap}<div class="refs">${refs}</div></div>`
+    : `<div class="ans"><div class="ans-th">${p.th}</div>${trap}<div class="refs">${refs}</div></div>`;
+
+  $("cardAns").classList.remove("hide");
+  $("card").classList.add("revealed");
+  $("tapHint").classList.add("hide");
+  $("btns").classList.remove("hidden");
+  if(ura) playPair(i);
+}
+
+function judge(ok){
+  if(!revealed) return;
+  const i = order[idx];
+  if(ok) sOk++; else sMaybe.push(i);
+  idx++;
+  if(idx >= order.length) endSession(); else render();
+}
+
+function endSession(){
+  if(!ura && order.length === SESSION){
+    state.pos = ((state.pos || 0) + SESSION) % PAIRS.length;
+    if(state.pos === 0) state.lap++;
+  }
+  state.maybe = sMaybe;
+  if(state.lap >= 1) state.uraOpen = true;
+  save();
+  $("playView").classList.add("hide");
+  $("endView").classList.remove("hide");
+  $("endOk").textContent = sOk;
+  $("endMaybe").textContent = sMaybe.length;
+  $("endLap").textContent = `จบรอบที่ ${state.lap}`;
+  $("btnMaybeOnly").disabled = sMaybe.length === 0;
+  const u = $("btnUra");
+  u.disabled = !state.uraOpen;
+  u.textContent = state.uraOpen
+    ? "ไทย ➜ ญี่ปุ่น"
+    : "ไทย ➜ ญี่ปุ่น · เรียนให้ครบ 1 รอบก่อน";
+}
+
+/* ---- 操作 ---- */
+$("card").addEventListener("click", reveal);
+$("btnOk").addEventListener("click", ()=>{
+  const m = $("mame");
+  m.classList.remove("hop"); void m.offsetWidth; m.classList.add("hop");
+  judge(true);
+});
+$("btnMaybe").addEventListener("click", ()=>judge(false));
+$("btnAgain").addEventListener("click", ()=> startSession(nextChunk(), false));
+$("btnMaybeOnly").addEventListener("click", ()=> startSession(state.maybe, ura));
+$("btnUra").addEventListener("click", ()=>{ if(state.uraOpen) startSession(nextChunk(), true); });
+
+
+/* ---- 20ペアずつ、続きから ---- */
+function nextChunk(){
+  const n = PAIRS.length, st = (state.pos || 0) % n;
+  const ids = [];
+  for(let k=0;k<Math.min(SESSION,n);k++) ids.push((st+k)%n);
+  return ids;
+}
+
+/* ---- 開始 ---- */
+startSession(nextChunk(), false);
+</script>
+
+<script>
+/* さくらんぼ専用のサービスワーカーを登録（旅のものとは別） */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

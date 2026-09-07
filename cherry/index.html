@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#FBF9F5">
+<title>日本語さくらんぼ | にほんへの旅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF9F5; --card:#FFFFFF; --ink:#38352F;
+    --sub:#96907F; --faint:#B9B3A3; --line:#EAE5DA;
+    --jp:'Klee One','Klee Medium','Klee','YuKyokasho','UD Digi Kyokasho N-R','Hiragino Mincho ProN','Noto Serif JP',serif;
+    --th:'Noto Sans Thai',sans-serif;
+  }
+  .t-dou {--accent:#A8815A;--accent-d:#8A6743;--hi:#D3B189}
+  .t-gin {--accent:#A8B6C4;--accent-d:#7C8C9C;--hi:#F2F7FB}
+  .t-kin {--accent:#D4A429;--accent-d:#A87C15;--hi:#FBE08A}
+  .t-dou,.t-gin,.t-kin{
+    --sheen:linear-gradient(100deg,var(--accent-d) 0%,var(--accent) 16%,
+      var(--hi) 36%,#FFFFFF 46%,var(--hi) 56%,var(--accent) 74%,var(--accent-d) 100%);
+    --sheen-v:linear-gradient(165deg,var(--hi) 0%,var(--accent) 46%,var(--accent-d) 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--th);background:var(--paper);color:var(--ink);
+    min-height:100vh;padding:26px 16px 40px;
+    display:flex;flex-direction:column;align-items:center;
+    -webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{width:100%;max-width:480px}
+
+  header{text-align:center;margin-bottom:24px}
+  h1{font-family:var(--jp);font-size:19px;font-weight:600;letter-spacing:.06em;
+     line-height:1.25;color:var(--ink)}
+  h1 .big{display:block;font-size:26px;letter-spacing:.04em;color:#B85A72}
+  .subth{font-size:12.5px;font-weight:600;color:var(--sub);margin-top:5px;letter-spacing:.02em}
+  .lead{font-size:12px;color:var(--faint);margin-top:14px;line-height:1.8}
+
+  a.card{
+    display:block;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 20px 18px;margin-bottom:12px;position:relative;overflow:hidden;
+    transition:opacity .15s;
+  }
+  a.card:active{opacity:.6}
+  a.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--sheen)}
+
+  .row{display:flex;align-items:center;gap:11px}
+  .dot{width:13px;height:13px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 32% 28%,var(--hi) 0%,var(--accent) 55%,var(--accent-d) 100%)}
+  .kanji{font-family:var(--jp);font-size:19px;font-weight:600;color:var(--accent-d)}
+  .thname{font-size:14px;font-weight:500}
+  .count{margin-left:auto;font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+  .desc{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.7}
+
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
+  .fill{height:100%;width:0%;background:var(--sheen);transition:width .4s ease}
+  .meta{display:flex;justify-content:space-between;margin-top:7px;
+        font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
+
+  .brand{display:flex;align-items:center;justify-content:center;gap:13px}
+  .cherry svg{width:50px;height:auto;display:block;
+    animation:breathe 4.2s ease-in-out infinite;transform-origin:50% 100%}
+  .cherry svg .eye{transform-box:fill-box;transform-origin:center;animation:blink 6.5s infinite}
+  .cherry svg .eye.r{animation-delay:.08s}
+  .names{text-align:left}
+  @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  @media (prefers-reduced-motion:reduce){.cherry svg,.cherry svg .eye{animation:none}}
+
+  .back{display:block;text-align:center;margin-top:22px;font-size:12px;
+        color:var(--sub);text-decoration:none}
+  .note{font-size:11px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand t-dou">
+      <div class="cherry" aria-hidden="true"><svg viewBox="0 0 48 62" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="var(--accent-d)" stroke-width="2" stroke-linecap="round">
+        <path d="M15.5 31.5C15 22 20 14.5 26 11"/>
+        <path d="M34.5 37C35 26 30 15 26 11"/>
+      </g>
+      <path d="M26 11C28 4.5 34 2.5 39 4.5C37 10.5 31 13.5 26 11Z"
+            fill="#C6D6AE" stroke="var(--accent-d)" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M27.5 10.2C30.5 8.4 34 6.2 37.6 5.2" fill="none"
+            stroke="var(--accent-d)" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+      <circle cx="34.5" cy="47.5" r="11" fill="#D96C89" stroke="var(--accent-d)" stroke-width="1.6"/>
+      <ellipse cx="28.2" cy="51.2" rx="2.4" ry="1.5" fill="#FFFFFF" opacity=".32"/>
+      <ellipse cx="41.2" cy="51.2" rx="2.4" ry="1.5" fill="#FFFFFF" opacity=".32"/>
+      <g class="eye">
+        <ellipse cx="31" cy="46.5" rx="2.9" ry="3.3" fill="#40382F"/>
+        <circle cx="32.1" cy="45.3" r="1" fill="#FFFFFF"/>
+      </g>
+      <g class="eye r">
+        <ellipse cx="38.6" cy="46.5" rx="2.9" ry="3.3" fill="#40382F"/>
+        <circle cx="39.7" cy="45.3" r="1" fill="#FFFFFF"/>
+      </g>
+      <path d="M33.3 52.2C34.2 53.4 35.6 53.4 36.5 52.2" fill="none"
+            stroke="#40382F" stroke-width="1.4" stroke-linecap="round"/>
+      <circle cx="15.5" cy="44" r="13" fill="#EC7F96" stroke="var(--accent-d)" stroke-width="1.7"/>
+      <path d="M7.6 38.4C8.8 34.8 11.2 32.4 14.2 31.6" fill="none"
+            stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+      <ellipse cx="7.6" cy="47.8" rx="2.9" ry="1.8" fill="#FFFFFF" opacity=".32"/>
+      <ellipse cx="23.4" cy="47.8" rx="2.9" ry="1.8" fill="#FFFFFF" opacity=".32"/>
+      <g class="eye">
+        <ellipse cx="11.2" cy="42.6" rx="3.3" ry="3.8" fill="#40382F"/>
+        <circle cx="12.4" cy="41.2" r="1.2" fill="#FFFFFF"/>
+      </g>
+      <g class="eye r">
+        <ellipse cx="20.2" cy="42.6" rx="3.3" ry="3.8" fill="#40382F"/>
+        <circle cx="21.4" cy="41.2" r="1.2" fill="#FFFFFF"/>
+      </g>
+      <path d="M13.7 49.2C14.8 50.7 16.4 50.7 17.5 49.2" fill="none"
+            stroke="#40382F" stroke-width="1.5" stroke-linecap="round"/>
+    </svg></div>
+      <div class="names">
+        <h1>日本語<span class="big">さくらんぼ</span></h1>
+        <p class="subth">เชอร์รี่ภาษาญี่ปุ่น</p>
+      </div>
+    </div>
+    <p class="lead">
+      คู่กัน · คำที่ใช้คู่กัน 300 คู่<br>
+      ไม่มีคะแนน · ไม่ต้องรีบเข้าใจ · แค่เจอบ่อยๆ
+    </p>
+  </header>
+
+  <a class="card t-dou" href="pea_dou.html">
+    <div class="row">
+      <i class="dot"></i><span class="kanji">銅</span>
+      <span class="thname">ทองแดง</span>
+      <span class="count">100 คู่</span>
+    </div>
+    <p class="desc">ทุกวันที่บ้านกับโรงเรียน · กิน นอน ไป กลับ</p>
+    <div class="bar"><div class="fill" id="f-dou"></div></div>
+    <div class="meta"><span id="m-dou">ยังไม่เริ่ม</span><span id="p-dou">0/100</span></div>
+  </a>
+
+  <a class="card t-gin" href="pea_gin.html">
+    <div class="row">
+      <i class="dot"></i><span class="kanji">銀</span>
+      <span class="thname">เงิน</span>
+      <span class="count">100 คู่</span>
+    </div>
+    <p class="desc">ออกไปข้างนอก · รถไฟ ร้านค้า มือถือ อากาศ</p>
+    <div class="bar"><div class="fill" id="f-gin"></div></div>
+    <div class="meta"><span id="m-gin">ยังไม่เริ่ม</span><span id="p-gin">0/100</span></div>
+  </a>
+
+  <a class="card t-kin" href="pea_kin.html">
+    <div class="row">
+      <i class="dot"></i><span class="kanji">金</span>
+      <span class="thname">ทอง</span>
+      <span class="count">100 คู่</span>
+    </div>
+    <p class="desc">สภาพกับความรู้สึก · สะพานไปสู่ N4</p>
+    <div class="bar"><div class="fill" id="f-kin"></div></div>
+    <div class="meta"><span id="m-kin">ยังไม่เริ่ม</span><span id="p-kin">0/100</span></div>
+  </a>
+
+
+
+  <a class="back" href="../index.html">← กลับไปหน้าแรก</a>
+  <p class="note">มิน = みんなの日本語 · อากิ = あきこと友だち</p>
+</div>
+
+<script>
+/* 各段の進みぐあいを読む（アプリ側と同じキー） */
+[["dou","n5peanuts_dou"],["gin","n5peanuts_gin"],["kin","n5peanuts_kin"]]
+.forEach(([id,key])=>{
+  let st = {lap:0,pos:0};
+  try{
+    const d = JSON.parse(localStorage.getItem(key) || "null");
+    if(d && typeof d.lap === "number") st = Object.assign(st,d);
+  }catch(e){}
+  const pos = st.pos || 0, lap = st.lap || 0;
+  document.getElementById("f-"+id).style.width = (pos/100*100) + "%";
+  document.getElementById("p-"+id).textContent = pos + "/100";
+  document.getElementById("m-"+id).textContent =
+    (lap === 0 && pos === 0) ? "ยังไม่เริ่ม" : `รอบที่ ${lap+1}`;
+});
+</script>
+
+<script>
+/* さくらんぼ専用のサービスワーカーを登録（旅のものとは別） */
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("./sw.js", {scope:"./"}).catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
