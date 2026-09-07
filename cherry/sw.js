@@ -4,10 +4,18 @@
 
    ▼ 中身を直したら、必ず下の数字を1つ上げる
 ------------------------------------------------ */
-const VERSION = 2;
+const VERSION = 3;
 
 const CORE_CACHE  = `cherry-core-v${VERSION}`;
-const AUDIO_CACHE = "cherry-audio-v1";   // 音声は内容が変わらないので据え置き
+const AUDIO_CACHE = "cherry-audio-v1";   // 音声の箱は据え置き（300個を落とし直さないため）
+
+/* 差し替えた音声だけ、キャッシュから捨てる。
+   音を録り直したら、そのファイル名をここに書く。 */
+const AUDIO_REFRESH = [
+  "./audio/pea_111.mp3",   // にほんへ いく
+  "./audio/pea_242.mp3",   // にほんに りゅうがくする
+  "./audio/pea_298.mp3"    // にほんで せいかつする
+];
 
 /* 最初に必ず取っておくもの（HTMLだけ。軽い） */
 const CORE = [
@@ -30,10 +38,17 @@ self.addEventListener("install", e => {
 /* ---- 有効化：古い版のキャッシュを捨てる ---- */
 self.addEventListener("activate", e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(k => k.startsWith("cherry-core-") && k !== CORE_CACHE)
-          .map(k => caches.delete(k))
-    )).then(() => self.clients.claim())
+    Promise.all([
+      /* 古い版のHTMLキャッシュを捨てる */
+      caches.keys().then(keys => Promise.all(
+        keys.filter(k => k.startsWith("cherry-core-") && k !== CORE_CACHE)
+            .map(k => caches.delete(k))
+      )),
+      /* 録り直した音声だけを捨てる（次に聞くとき取り直す） */
+      caches.open(AUDIO_CACHE).then(c =>
+        Promise.all(AUDIO_REFRESH.map(u => c.delete(new Request(u, {}))))
+      ).catch(() => {})
+    ]).then(() => self.clients.claim())
   );
 });
 
