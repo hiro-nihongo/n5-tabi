@@ -4,7 +4,7 @@
 
    ▼ 中身を直したら、必ず下の数字を1つ上げる
 ------------------------------------------------ */
-const VERSION = 18;
+const VERSION = 21;
 
 const CORE_CACHE  = `cherry-core-v${VERSION}`;
 const AUDIO_CACHE = "cherry-audio-v6";
