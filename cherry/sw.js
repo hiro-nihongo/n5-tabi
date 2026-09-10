@@ -4,10 +4,10 @@
 
    ▼ 中身を直したら、必ず下の数字を1つ上げる
 ------------------------------------------------ */
-const VERSION = 4;
+const VERSION = 18;
 
 const CORE_CACHE  = `cherry-core-v${VERSION}`;
-const AUDIO_CACHE = "cherry-audio-v2";
+const AUDIO_CACHE = "cherry-audio-v6";
 /* ▲ 音声を録り直したときは、この数字も1つ上げる。
       上げると、次に開いたとき音声を取り直す。         */
 

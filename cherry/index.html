@@ -57,8 +57,13 @@
 
   .desc{font-size:12px;color:var(--sub);margin-top:10px;line-height:1.7}
 
-  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px}
-  .fill{height:100%;width:0%;background:var(--sheen);transition:width .4s ease}
+  .sets{display:flex;gap:6px;margin-top:15px}
+  .sets i{
+    flex:1;height:9px;border-radius:3px;background:var(--line);
+    transition:background .4s ease;
+  }
+  .sets i.on{background:var(--sheen)}
+  .sets i.now{background:var(--sheen);opacity:.45}
   .meta{display:flex;justify-content:space-between;margin-top:7px;
         font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
 
@@ -135,33 +140,33 @@
     <div class="row">
       <i class="dot"></i><span class="kanji">銅</span>
       <span class="thname">ทองแดง</span>
-      <span class="count">100 คู่</span>
+      <span class="count">100 คู่ · 5 ชุด</span>
     </div>
     <p class="desc">ทุกวันที่บ้านกับโรงเรียน · กิน นอน ไป กลับ</p>
-    <div class="bar"><div class="fill" id="f-dou"></div></div>
-    <div class="meta"><span id="m-dou">ยังไม่เริ่ม</span><span id="p-dou">0/100</span></div>
+    <div class="sets" id="f-dou"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="meta"><span id="m-dou">ยังไม่เริ่ม</span><span id="p-dou">0/5 ชุด</span></div>
   </a>
 
   <a class="card t-gin" href="pea_gin.html">
     <div class="row">
       <i class="dot"></i><span class="kanji">銀</span>
       <span class="thname">เงิน</span>
-      <span class="count">100 คู่</span>
+      <span class="count">100 คู่ · 5 ชุด</span>
     </div>
     <p class="desc">ออกไปข้างนอก · รถไฟ ร้านค้า มือถือ อากาศ</p>
-    <div class="bar"><div class="fill" id="f-gin"></div></div>
-    <div class="meta"><span id="m-gin">ยังไม่เริ่ม</span><span id="p-gin">0/100</span></div>
+    <div class="sets" id="f-gin"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="meta"><span id="m-gin">ยังไม่เริ่ม</span><span id="p-gin">0/5 ชุด</span></div>
   </a>
 
   <a class="card t-kin" href="pea_kin.html">
     <div class="row">
       <i class="dot"></i><span class="kanji">金</span>
       <span class="thname">ทอง</span>
-      <span class="count">100 คู่</span>
+      <span class="count">100 คู่ · 5 ชุด</span>
     </div>
     <p class="desc">สภาพกับความรู้สึก · สะพานไปสู่ N4</p>
-    <div class="bar"><div class="fill" id="f-kin"></div></div>
-    <div class="meta"><span id="m-kin">ยังไม่เริ่ม</span><span id="p-kin">0/100</span></div>
+    <div class="sets" id="f-kin"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="meta"><span id="m-kin">ยังไม่เริ่ม</span><span id="p-kin">0/5 ชุด</span></div>
   </a>
 
 
@@ -172,7 +177,7 @@
 
 <script>
 /* 各段の進みぐあいを読む（アプリ側と同じキー） */
-[["dou","n5peanuts_dou"],["gin","n5peanuts_gin"],["kin","n5peanuts_kin"]]
+[["dou","n5peanuts_dou2"],["gin","n5peanuts_gin2"],["kin","n5peanuts_kin2"]]
 .forEach(([id,key])=>{
   let st = {lap:0,pos:0};
   try{
@@ -180,8 +185,12 @@
     if(d && typeof d.lap === "number") st = Object.assign(st,d);
   }catch(e){}
   const pos = st.pos || 0, lap = st.lap || 0;
-  document.getElementById("f-"+id).style.width = (pos/100*100) + "%";
-  document.getElementById("p-"+id).textContent = pos + "/100";
+  const done = Math.floor(pos / 20);            // 終わったセット数
+  const cells = document.getElementById("f-"+id).children;
+  for(let k = 0; k < cells.length; k++){
+    cells[k].className = k < done ? "on" : (k === done ? "now" : "");
+  }
+  document.getElementById("p-"+id).textContent = done + "/5 ชุด";
   document.getElementById("m-"+id).textContent =
     (lap === 0 && pos === 0) ? "ยังไม่เริ่ม" : `รอบที่ ${lap+1}`;
 });

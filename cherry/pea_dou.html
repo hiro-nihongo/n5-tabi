@@ -77,6 +77,7 @@
     content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--sheen);
   }
   .card.revealed{border-color:var(--line)}
+  #cardFront,#cardAns{width:100%}
 
   .front-jp{font-family:var(--jp);font-weight:600;font-size:clamp(27px,7.6vw,36px);color:var(--ink);line-height:1.55;letter-spacing:.02em}
   .front-th{font-size:clamp(23px,6.6vw,29px);font-weight:500;color:var(--ink);line-height:1.6}
@@ -84,11 +85,13 @@
   .ans{width:100%;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
   .ans-th{font-size:clamp(21px,6.2vw,26px);font-weight:500;color:var(--accent-d);line-height:1.6}
   .ans-jp{font-family:var(--jp);font-weight:600;font-size:clamp(25px,7vw,32px);color:var(--accent-d);line-height:1.5}
+  .gloss{font-size:11.5px;color:var(--sub);margin-top:11px;line-height:1.7}
   .refs{font-size:11px;color:var(--faint);margin-top:16px;letter-spacing:.06em;font-variant-numeric:tabular-nums}
   .trap{
     margin-top:14px;font-size:12.5px;background:var(--sand);
     border-radius:8px;padding:9px 13px;color:#7A6E52;line-height:1.6;text-align:left;
   }
+  .form-tag{font-size:11px;color:var(--faint);margin-top:9px;letter-spacing:.02em}
   .tap-hint{font-size:12px;color:var(--faint);margin-top:20px;font-weight:400}
   .speak{
     margin-top:16px;font-size:12.5px;font-weight:500;color:var(--sub);
@@ -134,6 +137,9 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,.28);
   }
   .big-btn[disabled]{opacity:.35;pointer-events:none}
+  .home{display:block;text-align:center;margin-top:20px;font-size:12px;
+        color:var(--faint);text-decoration:none}
+  .home:active{opacity:.5}
 
   /* ===== マスコット「まめちゃん」 ===== */
   .mame{
@@ -205,6 +211,7 @@
         <button class="big-btn solid" id="btnAgain">ต่อไปอีก 20 คู่</button>
         <button class="big-btn" id="btnMaybeOnly">เฉพาะที่ยังไม่ชัวร์</button>
         <button class="big-btn" id="btnUra">ไทย ➜ ญี่ปุ่น</button>
+        <a class="home" href="index.html">← กลับหน้าแรก</a>
       </div>
     </div>
   </div>
@@ -273,106 +280,106 @@
    jp:日本語 / th:タイ語 / mn:みんなの日本語 / ak:あきこと友だち
    ※ mn・ak の数字は仮。先生が実物に合わせて直す                */
 const PAIRS = [
-  {jp:"ごはんを たべる", th:"กินข้าว", mn:6, ak:3},
-  {jp:"みずを のむ", th:"ดื่มน้ำ", mn:6, ak:5},
-  {jp:"あさごはんを つくる", th:"ทำอาหารเช้า", mn:15, ak:5},
-  {jp:"おべんとうを もっていく", th:"เอาข้าวกล่องไป", mn:15, ak:18},
-  {jp:"コーヒーを いれる", th:"ชงกาแฟ", mn:16, ak:14},
-  {jp:"りょうりを する", th:"ทำอาหาร", mn:8, ak:3},
-  {jp:"さらを あらう", th:"ล้างจาน", mn:18, ak:14},
-  {jp:"はしを つかう", th:"ใช้ตะเกียบ", mn:15, ak:18, trap:"はし=ตะเกียบ/สะพาน(金で対)"},
-  {jp:"おなかが すく", th:"หิวข้าว", mn:null, ak:16},
-  {jp:"のどが かわく", th:"กระหายน้ำ", mn:null, ak:16},
-  {jp:"がっこうへ いく", th:"ไปโรงเรียน", mn:5, ak:4},
-  {jp:"うちへ かえる", th:"กลับบ้าน", mn:5, ak:4},
-  {jp:"でんしゃに のる", th:"ขึ้นรถไฟ", mn:15, ak:4, trap:"のる=「に」"},
-  {jp:"バスを おりる", th:"ลงจากรถเมล์", mn:14, ak:11, trap:"おりる=「を」"},
-  {jp:"えきで まつ", th:"รอที่สถานี", mn:14, ak:21},
-  {jp:"こうえんを さんぽする", th:"เดินเล่นในสวน", mn:13, ak:11},
-  {jp:"みちを わたる", th:"ข้ามถนน", mn:23, ak:11},
-  {jp:"うちを でる", th:"ออกจากบ้าน", mn:13, ak:11},
-  {jp:"がっこうに つく", th:"ถึงโรงเรียน", mn:23, ak:2},
-  {jp:"かさを さす", th:"กางร่ม", mn:2, ak:16},
-  {jp:"ほんを よむ", th:"อ่านหนังสือ", mn:6, ak:1},
-  {jp:"じを かく", th:"เขียนตัวอักษร", mn:6, ak:10},
-  {jp:"おんがくを きく", th:"ฟังเพลง", mn:6, ak:5},
-  {jp:"テレビを みる", th:"ดูทีวี", mn:4, ak:5},
-  {jp:"にほんごを はなす", th:"พูดภาษาญี่ปุ่น", mn:7, ak:10},
-  {jp:"かんじを おぼえる", th:"จำคันจิ", mn:17, ak:19},
-  {jp:"しゅくだいを する", th:"ทำการบ้าน", mn:6, ak:5},
-  {jp:"じしょを ひく", th:"เปิดพจนานุกรม", mn:18, ak:9},
-  {jp:"にほんごで いう", th:"บอกเป็นภาษาญี่ปุ่น", mn:21, ak:2},
-  {jp:"べんきょうを はじめる", th:"เริ่มเรียน", mn:14, ak:14},
-  {jp:"でんきを つける", th:"เปิดไฟ", mn:14, ak:14, trap:"30〜33で2組の対"},
-  {jp:"でんきを けす", th:"ปิดไฟ", mn:14, ak:10},
-  {jp:"まどを あける", th:"เปิดหน้าต่าง", mn:14, ak:10},
-  {jp:"まどを しめる", th:"ปิดหน้าต่าง", mn:14, ak:2},
-  {jp:"かぎを かける", th:"ล็อกกุญแจ", mn:7, ak:12},
-  {jp:"でんわを かける", th:"โทรหา", mn:7, ak:12},
-  {jp:"にもつを おく", th:"วางสัมภาระ", mn:15, ak:10},
-  {jp:"ごみばこに いれる", th:"ใส่ถังขยะ", mn:16, ak:14},
-  {jp:"しゃしんを とる", th:"ถ่ายรูป", mn:6, ak:2},
-  {jp:"おふろに はいる", th:"แช่อ่างอาบน้ำ", mn:13, ak:11},
-  {jp:"はを みがく", th:"แปรงฟัน", mn:18, ak:25},
-  {jp:"かおを あらう", th:"ล้างหน้า", mn:18, ak:14},
-  {jp:"シャワーを あびる", th:"อาบน้ำฝักบัว", mn:16, ak:5},
-  {jp:"ふくを きる", th:"ใส่เสื้อผ้า", mn:22, ak:22},
-  {jp:"くつを はく", th:"ใส่รองเท้า", mn:11, ak:12, trap:"43〜46 ใส่4種"},
-  {jp:"ぼうしを かぶる", th:"ใส่หมวก", mn:22, ak:20},
-  {jp:"めがねを かける", th:"ใส่แว่นตา", mn:22, ak:12},
-  {jp:"ふくを ぬぐ", th:"ถอดเสื้อผ้า", mn:22, ak:22},
-  {jp:"ベッドで ねる", th:"นอนบนเตียง", mn:10, ak:5, trap:"ねる=で"},
-  {jp:"ベッドから おきる", th:"ลุกจากเตียง", mn:10, ak:5, trap:"おきる=から"},
-  {jp:"じゅぎょうが はじまる", th:"คาบเรียนเริ่ม", mn:18, ak:3},
-  {jp:"じゅぎょうが おわる", th:"คาบเรียนจบ", mn:18, ak:3},
-  {jp:"あいさつを する", th:"ทักทาย", mn:null, ak:19},
-  {jp:"へんじを する", th:"ตอบรับ(ขานรับ)", mn:null, ak:null},
-  {jp:"なまえを よぶ", th:"เรียกชื่อ", mn:14, ak:9},
-  {jp:"てを あげる", th:"ยกมือ", mn:7, ak:15},
-  {jp:"いすに すわる", th:"นั่งเก้าอี้", mn:15, ak:2},
-  {jp:"せんせいに きく", th:"ถามครู", mn:6, ak:5, trap:"きく②に=ถาม"},
-  {jp:"ともだちに あう", th:"เจอเพื่อน", mn:6, ak:18, trap:"あう=「に」"},
-  {jp:"テストが ある", th:"มีการสอบ", mn:9, ak:8},
-  {jp:"プレゼントを あげる", th:"ให้ของขวัญ", mn:7, ak:15, trap:"60〜63 方向2組"},
-  {jp:"プレゼントを もらう", th:"ได้รับของขวัญ", mn:7, ak:15},
-  {jp:"ほんを かす", th:"ให้ยืมหนังสือ", mn:7, ak:2},
-  {jp:"ほんを かりる", th:"ยืมหนังสือ", mn:6, ak:4},
-  {jp:"てがみを だす", th:"ส่งจดหมาย", mn:13, ak:10},
-  {jp:"おれいを いう", th:"กล่าวขอบคุณ", mn:21, ak:10},
-  {jp:"ともだちと はなす", th:"คุยกับเพื่อน", mn:7, ak:10},
-  {jp:"メールを おくる", th:"ส่งข้อความ", mn:7, ak:null},
-  {jp:"ともだちを つれていく", th:"พาเพื่อนไป", mn:24, ak:1, trap:"คน=つれていく"},
-  {jp:"えきまで おくる", th:"ไปส่งถึงสถานี", mn:7, ak:null},
-  {jp:"みせに はいる", th:"เข้าร้าน", mn:13, ak:11},
-  {jp:"パンを かう", th:"ซื้อขนมปัง", mn:6, ak:2},
-  {jp:"おかねを はらう", th:"จ่ายเงิน", mn:17, ak:null},
-  {jp:"コンビニで かう", th:"ซื้อที่ร้านสะดวกซื้อ", mn:10, ak:1},
-  {jp:"かいものを する", th:"ไปซื้อของ", mn:5, ak:6},
-  {jp:"かばんに いれる", th:"ใส่กระเป๋า", mn:16, ak:14},
-  {jp:"おみやげを さがす", th:"หาของฝาก", mn:null, ak:7},
-  {jp:"くだものが たかい", th:"ผลไม้แพง", mn:8, ak:8, trap:"ญี่ปุ่นผลไม้แพงจริง"},
-  {jp:"おかねが ない", th:"ไม่มีเงิน", mn:7, ak:1},
-  {jp:"レジに ならぶ", th:"ต่อแถวจ่ายเงิน", mn:null, ak:25},
-  {jp:"あたまが いたい", th:"ปวดหัว", mn:16, ak:16},
-  {jp:"おなかが いたい", th:"ปวดท้อง", mn:9, ak:16},
-  {jp:"ねつが ある", th:"มีไข้", mn:9, ak:16},
-  {jp:"かぜを ひく", th:"เป็นหวัด", mn:18, ak:16},
-  {jp:"くすりを のむ", th:"กินยา", mn:11, ak:16, trap:"ยาใช้ のむ ไม่ใช่ たべる"},
-  {jp:"きぶんが わるい", th:"รู้สึกไม่สบาย", mn:8, ak:16},
-  {jp:"とても つかれる", th:"เหนื่อยมาก", mn:13, ak:16},
-  {jp:"せが たかい", th:"ตัวสูง", mn:8, ak:8},
-  {jp:"めが いい", th:"สายตาดี", mn:1, ak:1},
-  {jp:"びょういんに いく", th:"ไปโรงพยาบาล", mn:5, ak:16},
-  {jp:"へやを そうじする", th:"ทำความสะอาดห้อง", mn:3, ak:5},
-  {jp:"せんたくを する", th:"ซักผ้า", mn:19, ak:5},
-  {jp:"シーツを あらう", th:"ซักผ้าปูที่นอน", mn:18, ak:14},
-  {jp:"へやを かたづける", th:"เก็บห้องให้เรียบร้อย", mn:3, ak:null},
-  {jp:"ははを てつだう", th:"ช่วยแม่", mn:14, ak:23},
-  {jp:"かぎを なくす", th:"ทำกุญแจหาย", mn:17, ak:null},
-  {jp:"かさを わすれる", th:"ลืมร่ม", mn:17, ak:16},
-  {jp:"さいふを おとす", th:"ทำกระเป๋าสตางค์หล่น", mn:null, ak:15},
-  {jp:"じかんが ある", th:"มีเวลา", mn:9, ak:3},
-  {jp:"じかんが かかる", th:"ใช้เวลานาน", mn:11, ak:4},
+  {jp:"ごはんを たべます", th:"กินข้าว", mn:6, ak:3, gl:"ごはん = ข้าว · たべます = กิน"},
+  {jp:"みずを のみます", th:"ดื่มน้ำ", mn:6, ak:5, gl:"みず = น้ำ · のみます = ดื่ม"},
+  {jp:"あさごはんを つくります", th:"ทำอาหารเช้า", mn:15, ak:5, gl:"あさごはん = อาหารเช้า · つくります = ทำ"},
+  {jp:"おべんとうを もっていきます", th:"เอาข้าวกล่องไป", mn:15, ak:18, gl:"おべんとう = ข้าวกล่อง · もっていきます = เอาไป"},
+  {jp:"コーヒーを いれます", th:"ชงกาแฟ", mn:16, ak:14, gl:"コーヒー = กาแฟ · いれます = ชง"},
+  {jp:"りょうりします", th:"ทำอาหาร", mn:8, ak:3, gl:"りょうりします = ทำอาหาร"},
+  {jp:"さらを あらいます", th:"ล้างจาน", mn:18, ak:14, gl:"さら = จาน · あらいます = ล้าง"},
+  {jp:"はしを つかいます", th:"ใช้ตะเกียบ", mn:15, ak:18, gl:"はし = ตะเกียบ · つかいます = ใช้", trap:"はし=ตะเกียบ/สะพาน(金で対)"},
+  {jp:"おなかが すきました", th:"หิวข้าว", mn:4, ak:16, form:"รูปอดีต", gl:"おなか = ท้อง · すきました = ว่าง"},
+  {jp:"のどが かわきました", th:"กระหายน้ำ", mn:4, ak:16, form:"รูปอดีต", gl:"のど = คอ · かわきました = แห้ง"},
+  {jp:"がっこうへ いきます", th:"ไปโรงเรียน", mn:5, ak:4, gl:"がっこう = โรงเรียน · いきます = ไป"},
+  {jp:"うちへ かえります", th:"กลับบ้าน", mn:5, ak:4, gl:"うち = บ้าน · かえります = กลับ"},
+  {jp:"でんしゃに のります", th:"ขึ้นรถไฟ", mn:15, ak:4, gl:"でんしゃ = รถไฟ · のります = ขึ้น", trap:"のる=「に」"},
+  {jp:"バスを おります", th:"ลงจากรถเมล์", mn:14, ak:11, gl:"バス = รถเมล์ · おります = ลง", trap:"おりる=「を」"},
+  {jp:"えきで まちます", th:"รอที่สถานี", mn:14, ak:21, gl:"えき = สถานี · まちます = รอ"},
+  {jp:"こうえんを さんぽします", th:"เดินเล่นในสวน", mn:13, ak:11, gl:"こうえん = สวน · さんぽします = เดินเล่น"},
+  {jp:"みちを わたります", th:"ข้ามถนน", mn:23, ak:11, gl:"みち = ถนน · わたります = ข้าม"},
+  {jp:"うちを でます", th:"ออกจากบ้าน", mn:13, ak:11, gl:"うち = บ้าน · でます = ออก"},
+  {jp:"がっこうに つきます", th:"ถึงโรงเรียน", mn:23, ak:2, gl:"がっこう = โรงเรียน · つきます = ถึง"},
+  {jp:"かさを さします", th:"กางร่ม", mn:2, ak:16, gl:"かさ = ร่ม · さします = กาง"},
+  {jp:"ほんを よみます", th:"อ่านหนังสือ", mn:6, ak:1, gl:"ほん = หนังสือ · よみます = อ่าน"},
+  {jp:"じを かきます", th:"เขียนตัวอักษร", mn:6, ak:10, gl:"じ = ตัวอักษร · かきます = เขียน"},
+  {jp:"おんがくを ききます", th:"ฟังเพลง", mn:6, ak:5, gl:"おんがく = เพลง · ききます = ฟัง"},
+  {jp:"テレビを みます", th:"ดูทีวี", mn:4, ak:5, gl:"テレビ = โทรทัศน์ · みます = ดู"},
+  {jp:"にほんごを はなします", th:"พูดภาษาญี่ปุ่น", mn:14, ak:10, gl:"にほんご = ภาษาญี่ปุ่น · はなします = พูด"},
+  {jp:"かんじを おぼえます", th:"จำคันจิ", mn:17, ak:19, gl:"かんじ = คันจิ · おぼえます = จำ"},
+  {jp:"しゅくだいします", th:"ทำการบ้าน", mn:6, ak:5, gl:"しゅくだいします = ทำการบ้าน"},
+  {jp:"じしょを ひきます", th:"เปิดพจนานุกรม", mn:23, ak:9, gl:"じしょ = พจนานุกรม · ひきます = ดึง"},
+  {jp:"にほんごで いいます", th:"บอกเป็นภาษาญี่ปุ่น", mn:21, ak:2, gl:"にほんご = ภาษาญี่ปุ่น · いいます = บอก"},
+  {jp:"べんきょうを はじめます", th:"เริ่มเรียน", mn:14, ak:14, gl:"べんきょう = การเรียน · はじめます = เริ่ม"},
+  {jp:"でんきを つけます", th:"เปิดไฟ", mn:14, ak:14, gl:"でんき = ไฟ · つけます = เปิด", trap:"30〜33で2組の対"},
+  {jp:"でんきを けします", th:"ปิดไฟ", mn:14, ak:10, gl:"でんき = ไฟ · けします = ดับ"},
+  {jp:"まどを あけます", th:"เปิดหน้าต่าง", mn:14, ak:10, gl:"まど = หน้าต่าง · あけます = เปิด"},
+  {jp:"まどを しめます", th:"ปิดหน้าต่าง", mn:14, ak:2, gl:"まど = หน้าต่าง · しめます = ปิด"},
+  {jp:"かぎを かけます", th:"ล็อกกุญแจ", mn:7, ak:12, gl:"かぎ = กุญแจ · かけます = ล็อก"},
+  {jp:"でんわを かけます", th:"โทรหา", mn:7, ak:12, gl:"でんわ = โทรศัพท์ · かけます = โทร"},
+  {jp:"にもつを おきます", th:"วางสัมภาระ", mn:15, ak:10, gl:"にもつ = สัมภาระ · おきます = วาง"},
+  {jp:"ごみを すてます", th:"ทิ้งขยะ", mn:18, ak:14, gl:"ごみ = ขยะ · すてます = ทิ้ง"},
+  {jp:"しゃしんを とります", th:"ถ่ายรูป", mn:6, ak:2, gl:"しゃしん = รูป · とります = ถ่าย"},
+  {jp:"おふろに はいります", th:"แช่อ่างอาบน้ำ", mn:13, ak:11, gl:"おふろ = อ่างอาบน้ำ · はいります = เข้า"},
+  {jp:"はを みがきます", th:"แปรงฟัน", mn:18, ak:25, gl:"は = ฟัน · みがきます = แปรง"},
+  {jp:"かおを あらいます", th:"ล้างหน้า", mn:18, ak:14, gl:"かお = หน้า · あらいます = ล้าง"},
+  {jp:"シャワーを あびます", th:"อาบน้ำฝักบัว", mn:16, ak:5, gl:"シャワー = ฝักบัว · あびます = อาบ"},
+  {jp:"ふくを きます", th:"ใส่เสื้อผ้า", mn:22, ak:22, gl:"ふく = เสื้อผ้า · きます = ใส่"},
+  {jp:"くつを はきます", th:"ใส่รองเท้า", mn:11, ak:12, gl:"くつ = รองเท้า · はきます = ใส่", trap:"43〜46 ใส่4種"},
+  {jp:"ぼうしを かぶります", th:"ใส่หมวก", mn:22, ak:20, gl:"ぼうし = หมวก · かぶります = ใส่"},
+  {jp:"めがねを かけます", th:"ใส่แว่นตา", mn:22, ak:12, gl:"めがね = แว่นตา · かけます = ใส่"},
+  {jp:"ふくを ぬぎます", th:"ถอดเสื้อผ้า", mn:22, ak:22, gl:"ふく = เสื้อผ้า · ぬぎます = ถอด"},
+  {jp:"ベッドで ねます", th:"นอนบนเตียง", mn:10, ak:5, gl:"ベッド = เตียง · ねます = นอน", trap:"ねる=で"},
+  {jp:"ベッドから おきます", th:"ลุกจากเตียง", mn:10, ak:5, gl:"ベッド = เตียง · おきます = ลุก", trap:"おきる=から"},
+  {jp:"じゅぎょうが はじまります", th:"คาบเรียนเริ่ม", mn:18, ak:3, gl:"じゅぎょう = คาบเรียน · はじまります = เริ่ม"},
+  {jp:"じゅぎょうが おわります", th:"คาบเรียนจบ", mn:18, ak:3, gl:"じゅぎょう = คาบเรียน · おわります = จบ"},
+  {jp:"あいさつします", th:"ทักทาย", mn:null, ak:19, gl:"あいさつします = ทักทาย"},
+  {jp:"へんじします", th:"ตอบรับ(ขานรับ)", mn:null, ak:null, gl:"へんじします = ตอบรับ"},
+  {jp:"なまえを よびます", th:"เรียกชื่อ", mn:14, ak:21, gl:"なまえ = ชื่อ · よびます = เรียก"},
+  {jp:"てを あげます", th:"ยกมือ", mn:7, ak:15, gl:"て = มือ · あげます = ยก"},
+  {jp:"いすに すわります", th:"นั่งเก้าอี้", mn:15, ak:2, gl:"いす = เก้าอี้ · すわります = นั่ง"},
+  {jp:"せんせいに ききます", th:"ถามครู", mn:6, ak:5, gl:"せんせい = ครู · ききます = ถาม", trap:"きく②に=ถาม"},
+  {jp:"ともだちに あいます", th:"เจอเพื่อน", mn:6, ak:18, gl:"ともだち = เพื่อน · あいます = เจอ", trap:"あう=「に」"},
+  {jp:"テストが あります", th:"มีการสอบ", mn:9, ak:8, gl:"テスト = การสอบ · あります = มี"},
+  {jp:"プレゼントを あげます", th:"ให้ของขวัญ", mn:7, ak:15, gl:"プレゼント = ของขวัญ · あげます = ให้", trap:"60〜63 方向2組"},
+  {jp:"プレゼントを もらいます", th:"ได้รับของขวัญ", mn:7, ak:15, gl:"プレゼント = ของขวัญ · もらいます = ได้รับ"},
+  {jp:"ほんを かします", th:"ให้ยืมหนังสือ", mn:7, ak:10, gl:"ほん = หนังสือ · かします = ให้ยืม"},
+  {jp:"ほんを かります", th:"ยืมหนังสือ", mn:6, ak:4, gl:"ほん = หนังสือ · かります = ยืม"},
+  {jp:"てがみを だします", th:"ส่งจดหมาย", mn:13, ak:10, gl:"てがみ = จดหมาย · だします = ส่ง"},
+  {jp:"おれいを いいます", th:"กล่าวขอบคุณ", mn:21, ak:10, gl:"おれい = การขอบคุณ · いいます = บอก"},
+  {jp:"ともだちと はなします", th:"คุยกับเพื่อน", mn:14, ak:10, gl:"ともだち = เพื่อน · はなします = พูด"},
+  {jp:"メールを おくります", th:"ส่งข้อความ", mn:7, ak:null, gl:"メール = อีเมล · おくります = ส่ง"},
+  {jp:"ともだちを つれていきます", th:"พาเพื่อนไป", mn:24, ak:1, gl:"ともだち = เพื่อน · つれていきます = พาไป", trap:"คน=つれていく"},
+  {jp:"えきまで おくります", th:"ไปส่งถึงสถานี", mn:7, ak:null, gl:"えき = สถานี · おくります = ส่ง"},
+  {jp:"みせに はいります", th:"เข้าร้าน", mn:13, ak:11, gl:"みせ = ร้าน · はいります = เข้า"},
+  {jp:"パンを かいます", th:"ซื้อขนมปัง", mn:6, ak:5, gl:"パン = ขนมปัง · かいます = ซื้อ"},
+  {jp:"おかねを はらいます", th:"จ่ายเงิน", mn:17, ak:null, gl:"おかね = เงิน · はらいます = จ่าย"},
+  {jp:"コンビニで かいます", th:"ซื้อที่ร้านสะดวกซื้อ", mn:10, ak:5, gl:"コンビニ = ร้านสะดวกซื้อ · かいます = ซื้อ"},
+  {jp:"かいものします", th:"ไปซื้อของ", mn:5, ak:6, gl:"かいものします = ซื้อของ"},
+  {jp:"かばんに いれます", th:"ใส่กระเป๋า", mn:16, ak:14, gl:"かばん = กระเป๋า · いれます = ใส่"},
+  {jp:"おみやげを さがします", th:"หาของฝาก", mn:null, ak:7, gl:"おみやげ = ของฝาก · さがします = หา"},
+  {jp:"くだものが たかいです", th:"ผลไม้แพง", mn:8, ak:8, gl:"くだもの = ผลไม้ · たかいです = สูง", trap:"ญี่ปุ่นผลไม้แพงจริง"},
+  {jp:"おかねが ありません", th:"ไม่มีเงิน", mn:7, ak:1, gl:"おかね = เงิน · ありません = ไม่มี"},
+  {jp:"レジに ならびます", th:"ต่อแถวจ่ายเงิน", mn:null, ak:25, gl:"レジ = แคชเชียร์ · ならびます = ต่อแถว"},
+  {jp:"あたまが いたいです", th:"ปวดหัว", mn:16, ak:16, gl:"あたま = หัว · いたいです = เจ็บ"},
+  {jp:"おなかが いたいです", th:"ปวดท้อง", mn:9, ak:16, gl:"おなか = ท้อง · いたいです = เจ็บ"},
+  {jp:"ねつが あります", th:"มีไข้", mn:9, ak:16, gl:"ねつ = ไข้ · あります = มี"},
+  {jp:"かぜを ひきます", th:"เป็นหวัด", mn:23, ak:16, gl:"かぜ = หวัด · ひきます = ดึง"},
+  {jp:"くすりを のみます", th:"กินยา", mn:11, ak:16, gl:"くすり = ยา · のみます = ดื่ม", trap:"ยาใช้ のむ ไม่ใช่ たべる"},
+  {jp:"きぶんが わるいです", th:"รู้สึกไม่สบาย", mn:8, ak:16, gl:"きぶん = อารมณ์ · わるいです = แย่"},
+  {jp:"とても つかれました", th:"เหนื่อยมาก", mn:13, ak:16, form:"รูปอดีต", gl:"とても = มาก · つかれました = เหนื่อย"},
+  {jp:"せが たかいです", th:"ตัวสูง", mn:8, ak:8},
+  {jp:"めが いいです", th:"สายตาดี", mn:1, ak:1, gl:"め = ตา · いいです = ดี"},
+  {jp:"びょういんに いきます", th:"ไปโรงพยาบาล", mn:5, ak:16, gl:"びょういん = โรงพยาบาล · いきます = ไป"},
+  {jp:"へやを そうじします", th:"ทำความสะอาดห้อง", mn:3, ak:5, gl:"へや = ห้อง · そうじします = ทำความสะอาด"},
+  {jp:"せんたくします", th:"ซักผ้า", mn:19, ak:5, gl:"せんたくします = ซักผ้า"},
+  {jp:"シーツを あらいます", th:"ซักผ้าปูที่นอน", mn:18, ak:14, gl:"シーツ = ผ้าปูที่นอน · あらいます = ล้าง"},
+  {jp:"へやを かたづけます", th:"เก็บห้องให้เรียบร้อย", mn:3, ak:null, gl:"へや = ห้อง · かたづけます = เก็บ"},
+  {jp:"ははを てつだいます", th:"ช่วยแม่", mn:14, ak:23, gl:"はは = แม่ · てつだいます = ช่วย"},
+  {jp:"かぎを なくします", th:"ทำกุญแจหาย", mn:17, ak:null, gl:"かぎ = กุญแจ · なくします = ทำหาย"},
+  {jp:"かさを わすれます", th:"ลืมร่ม", mn:17, ak:16, gl:"かさ = ร่ม · わすれます = ลืม"},
+  {jp:"さいふを おとします", th:"ทำกระเป๋าสตางค์หล่น", mn:null, ak:15, gl:"さいふ = กระเป๋าสตางค์ · おとします = ทำหล่น"},
+  {jp:"じかんが あります", th:"มีเวลา", mn:9, ak:3, gl:"じかん = เวลา · あります = มี"},
+  {jp:"じかんが かかります", th:"ใช้เวลานาน", mn:11, ak:4, gl:"じかん = เวลา · かかります = ใช้"},
 ];
 
 /* 段を切り替える: "bronze" | "silver" | "gold" */
@@ -380,7 +387,7 @@ const PAIRS = [
    銅: "bronze" / 0    銀: "silver" / 100    金: "gold" / 200 */
 const TIER         = "bronze";
 const AUDIO_OFFSET = 0;
-const KEY_SUFFIX   = "dou";
+const KEY_SUFFIX   = "dou2";
 const TIER_NAME = {bronze:"銅", silver:"銀", gold:"金"};
 document.documentElement.dataset.tier = TIER;
 
@@ -435,15 +442,44 @@ function playPair(i){
   a.play().catch(fb);
 }
 
+
+/* ---- 長い行は字を縮めて1行に収める ---- */
+function fitOne(el, avail){
+  el.style.whiteSpace = "nowrap";
+  el.style.fontSize   = "";          // いったんCSSの大きさに戻す
+  el.style.width      = avail + "px";
+  const base = parseFloat(getComputedStyle(el).fontSize);
+  const need = el.scrollWidth;       // 本当に必要な幅
+  el.style.width = "";
+  if(need <= avail) return;          // 収まっているなら何もしない
+  let k = avail / need * 0.97;
+  if(k < 0.58){ k = 0.58; el.style.whiteSpace = "normal"; }  // 縮めすぎない
+  el.style.fontSize = (base * k).toFixed(1) + "px";
+}
+function fitAll(){
+  requestAnimationFrame(()=>{
+    const card = document.getElementById("card");
+    if(!card) return;
+    const cs = getComputedStyle(card);
+    const avail = card.clientWidth
+                - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if(avail <= 0) return;
+    card.querySelectorAll(".front-jp,.front-th,.ans-jp,.ans-th")
+        .forEach(el => fitOne(el, avail));
+  });
+}
+window.addEventListener("resize", fitAll);
+
 /* ---- セッション ---- */
 const SESSION = 20;                 // 1回に出すペア数
 let order = [], idx = 0, revealed = false;
 let ura = false, sOk = 0, sMaybe = [];
+let finished = false;               // このセッションは終わったか
 
 function startSession(ids, isUra){
   ura = !!isUra;
   order = ids.slice();
-  idx = 0; sOk = 0; sMaybe = [];
+  idx = 0; sOk = 0; sMaybe = []; finished = false;
   $("endView").classList.add("hide");
   $("playView").classList.remove("hide");
   $("tierName").textContent = TIER_NAME[TIER];
@@ -462,10 +498,12 @@ function render(){
   $("tapHint").textContent = ura ? "พูดในใจก่อน แล้วแตะเช็ก" : "แตะเพื่อดูคำตอบ";
 
   if(ura){
-    $("cardFront").innerHTML = `<div class="front-th">${p.th}</div>`;
+    $("cardFront").innerHTML = `<div class="front-th">${p.th}</div>` +
+      (p.form ? `<div class="form-tag">${p.form}</div>` : "");
   }else{
     $("cardFront").innerHTML =
       `<div class="front-jp">${p.jp}</div>
+       ${p.form ? `<div class="form-tag">${p.form}</div>` : ""}
        <button class="speak" id="spk">ฟังอีกครั้ง</button>`;
     $("spk").addEventListener("click", e=>{ e.stopPropagation(); playPair(i); });
     playPair(i);
@@ -483,8 +521,10 @@ function render(){
   }
 
   const gpos = ((state.pos || 0) + idx) % PAIRS.length;
-  $("lapText").textContent = `รอบ ${state.lap+1} · ${gpos+1}/${PAIRS.length}`;
+  $("lapText").textContent =
+    `รอบ ${state.lap+1} · ${idx+1}/${order.length} · (${gpos+1}/${PAIRS.length})`;
   $("fill").style.width = (idx/order.length*100) + "%";
+  fitAll();
 }
 
 function reveal(){
@@ -497,17 +537,20 @@ function reveal(){
 
   $("cardAns").innerHTML = ura
     ? `<div class="ans"><div class="ans-jp">${p.jp}</div>${trap}<div class="refs">${refs}</div></div>`
-    : `<div class="ans"><div class="ans-th">${p.th}</div>${trap}<div class="refs">${refs}</div></div>`;
+    : `<div class="ans"><div class="ans-th">${p.th}</div>`
+      + (p.gl ? `<div class="gloss">${p.gl}</div>` : "")
+      + `${trap}<div class="refs">${refs}</div></div>`;
 
   $("cardAns").classList.remove("hide");
   $("card").classList.add("revealed");
   $("tapHint").classList.add("hide");
   $("btns").classList.remove("hidden");
   if(ura) playPair(i);
+  fitAll();
 }
 
 function judge(ok){
-  if(!revealed) return;
+  if(finished || !revealed) return;      // 終わったあとは効かない
   const i = order[idx];
   if(ok) sOk++; else sMaybe.push(i);
   idx++;
@@ -515,6 +558,8 @@ function judge(ok){
 }
 
 function endSession(){
+  if(finished) return;                   // 二重に入らない
+  finished = true;
   if(!ura && order.length === SESSION){
     state.pos = ((state.pos || 0) + SESSION) % PAIRS.length;
     if(state.pos === 0) state.lap++;
